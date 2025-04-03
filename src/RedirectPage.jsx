@@ -23,7 +23,7 @@ const RedirectPage = () => {
     fetchUrl();
   }, [slug, navigate]);
 
-  return <p>Redirecting...</p>;
+  return <p className="w-screen text-center">Redirecting...</p>;
 };
 
 export default RedirectPage;

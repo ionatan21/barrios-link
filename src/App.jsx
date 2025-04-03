@@ -9,7 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<ShortenUrl />} />
         <Route path="/:slug" element={<RedirectPage />} />
-        <Route path="/404" element={<h1 className="text-red-500">Page Not Found</h1>} />
+        <Route path="/404" element={<h1 className="w-screen text-red-500 inset-0 text-center">Page Not Found</h1>} />
       </Routes>
     </Router>
   );

@@ -26,10 +26,11 @@ const ShortenUrl = () => {
 
       const data = await response.json();
       if (data.slug) {
-        const newShortUrl = `https://barrios-link.vercel.app/${data.slug}`;
+        const newShortUrl = `https://barrios-link.vercel.app//${data.slug}`;
+        const linkalt = `barrios-link.vercel.app/${data.slug}`;
 
         // Agregar nuevo link a la lista
-        const newLinks = [{ originalUrl, shortUrl: newShortUrl }, ...links];
+        const newLinks = [{ originalUrl, linkalt: linkalt, shortUrl: newShortUrl }, ...links];
         setLinks(newLinks);
         localStorage.setItem("shortenedLinks", JSON.stringify(newLinks));
 
@@ -92,7 +93,7 @@ const ShortenUrl = () => {
                   rel="noopener noreferrer"
                   className="text-blue-600 text-sm underline"
                 >
-                  {link.shortUrl}
+                  {link.linkalt}
                 </a>
               </li>
             ))}
