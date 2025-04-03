@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 const ShortenUrl = () => {
   const [originalUrl, setOriginalUrl] = useState("");
   const [shortUrl, setShortUrl] = useState("");
+  const [shortalt, setshortalt] = useState("");
   const [links, setLinks] = useState([]);
 
   // Cargar enlaces guardados en localStorage al inicio
@@ -18,11 +19,14 @@ const ShortenUrl = () => {
     if (!originalUrl) return alert("Por favor, ingresa una URL válida.");
 
     try {
-      const response = await fetch("https://barrios-link-backend.vercel.app/api/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: originalUrl }),
-      });
+      const response = await fetch(
+        "https://barrios-link-backend.vercel.app/api/create",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: originalUrl }),
+        }
+      );
 
       const data = await response.json();
       if (data.slug) {
@@ -30,11 +34,15 @@ const ShortenUrl = () => {
         const linkalt = `barrios-link.vercel.app/${data.slug}`;
 
         // Agregar nuevo link a la lista
-        const newLinks = [{ originalUrl, linkalt: linkalt, shortUrl: newShortUrl }, ...links];
+        const newLinks = [
+          { originalUrl, linkalt: linkalt, shortUrl: newShortUrl },
+          ...links,
+        ];
         setLinks(newLinks);
         localStorage.setItem("shortenedLinks", JSON.stringify(newLinks));
 
         setShortUrl(newShortUrl);
+        setshortalt(linkalt);
       } else {
         alert("Error al acortar la URL");
       }
@@ -70,21 +78,26 @@ const ShortenUrl = () => {
             rel="noopener noreferrer"
             className="text-blue-600 underline"
           >
-            {shortUrl}
+            {shortalt}
           </a>
         </p>
       )}
 
       {links.length > 0 && (
         <div className="mt-6 w-full">
-          <h2 className="text-lg text-center font-semibold mb-2">Previous Links</h2>
+          <h2 className="text-lg text-center font-semibold mb-2">
+            Previous Links
+          </h2>
           <ul className="w-full">
             {links.map((link, index) => (
               <li
                 key={index}
                 className="flex flex-col md:flex-row justify-evenly mb-2 p-2 border-b border-gray-200"
               >
-                <span className="text-sm text-gray-600">
+                <span
+                  className="text-sm max-w-44 text-gray-600 truncate"
+                  title={link.originalUrl}
+                >
                   {link.originalUrl}
                 </span>
                 <a
