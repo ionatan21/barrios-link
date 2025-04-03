@@ -26,7 +26,7 @@ const ShortenUrl = () => {
 
       const data = await response.json();
       if (data.slug) {
-        const newShortUrl = `http://localhost:5173/${data.slug}`;
+        const newShortUrl = `https://barrios-link.vercel.app/${data.slug}`;
 
         // Agregar nuevo link a la lista
         const newLinks = [{ originalUrl, shortUrl: newShortUrl }, ...links];
