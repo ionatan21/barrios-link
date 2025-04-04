@@ -5,7 +5,7 @@ const RedirectPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
 
-  useEffect(() => {
+ useEffect(() => {
     const fetchUrl = async () => {
       try {
         const response = await fetch(`https://barrios-link-backend.vercel.app/api/${slug}`);
@@ -23,7 +23,7 @@ const RedirectPage = () => {
     fetchUrl();
   }, [slug, navigate]);
 
-  return <p className="w-screen text-center">Redirecting...</p>;
+  return <p className="w-screen animate-fade-in-down text-center z-10 text-white text-4xl">Redirecting...</p>;
 };
 
 export default RedirectPage;

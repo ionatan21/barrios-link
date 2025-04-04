@@ -53,8 +53,8 @@ const ShortenUrl = () => {
   };
 
   return (
-    <div className="w-full max-w-max mx-auto flex flex-col items-center bg-white shadow-lg rounded-xl p-6">
-      <h1 className="text-xl font-semibold mb-4">Shorten Your Link</h1>
+    <div className="w-full animate-fade-in-down z-10 max-w-[90vw] md:max-w-max flex flex-col items-center bg-white shadow-lg rounded-xl p-10">
+      <h1 className="text-2xl md:text-5xl font-semibold mb-6">Shorten Your Link</h1>
       <Input
         className="w-full p-2 border border-gray-300 rounded-lg"
         type="text"
@@ -86,7 +86,7 @@ const ShortenUrl = () => {
       {links.length > 0 && (
         <div className="mt-6 w-full">
           <h2 className="text-lg text-center font-semibold mb-2">
-            Previous Links
+            Your Links
           </h2>
           <ul className="w-full">
             {links.map((link, index) => (

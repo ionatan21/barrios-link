@@ -5,7 +5,10 @@
   width: 100vw;
   height: 100vh;
   place-items: center;
+  justify-content: center;
+  align-items: center;
   display: flex;
+  flex-direction: column;
 }
 
 @keyframes logo-spin {
