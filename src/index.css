@@ -61,6 +61,9 @@ body {
   display: flex;
   justify-content: center;
   background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center;
   background: linear-gradient(90deg, #ff8c00, cyan);
 
   &::before {
