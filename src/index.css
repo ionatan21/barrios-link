@@ -60,26 +60,7 @@ body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-size: cover;
-  background-position: center;
-  background: linear-gradient(90deg, #ff8c00, cyan);
-
-  &::before {
-    mask-image: linear-gradient(to bottom, transparent, black);
-    -webkit-mask-image: linear-gradient(to bottom, transparent, black);
-    background: linear-gradient(90deg, #009dff, rebeccapurple);
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    
-  }
 }
-
 
 button {
   border-radius: 8px;

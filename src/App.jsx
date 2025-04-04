@@ -4,10 +4,12 @@ import RedirectPage from "./components/Redirect/RedirectPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PageNotFound from "./components/404/PageNotFound";
 import Footer from "./components/Footer/Footer";
+import Gradient from "./components/Background/Gradient";
 
 function App() {
   return (
     <Router>
+      <Gradient />
       <Routes>
         <Route path="/" element={<ShortenUrl />} />
         <Route path="/:slug" element={<RedirectPage />} />
