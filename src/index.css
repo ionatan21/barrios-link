@@ -60,6 +60,7 @@ body {
   min-height: 100vh;
   display: flex;
   justify-content: center;
+  background-repeat: no-repeat;
   background: linear-gradient(90deg, #ff8c00, cyan);
 
   &::before {
