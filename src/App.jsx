@@ -5,11 +5,13 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PageNotFound from "./components/404/PageNotFound";
 import Footer from "./components/Footer/Footer";
 import Gradient from "./components/Background/Gradient";
+import LogoContainer from "./components/LogoContainer/LogoContainer";
 
 function App() {
   return (
     <Router>
       <Gradient />
+      <LogoContainer />
       <Routes>
         <Route path="/" element={<ShortenUrl />} />
         <Route path="/:slug" element={<RedirectPage />} />

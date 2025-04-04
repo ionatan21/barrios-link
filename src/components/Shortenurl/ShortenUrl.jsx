@@ -64,7 +64,7 @@ const ShortenUrl = () => {
       />
       <Button
         onClick={handleShorten}
-        className="w-32 mt-3 text-white font-medium py-2 rounded-lg"
+        className="w-32 mt-3 text-white font-medium py-2 rounded-lg cursor-pointer"
       >
         Shorten!
       </Button>
