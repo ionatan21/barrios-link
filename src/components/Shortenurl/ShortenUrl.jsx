@@ -92,7 +92,7 @@ const ShortenUrl = () => {
             {links.map((link, index) => (
               <li
                 key={index}
-                className="flex flex-col md:flex-row justify-evenly mb-2 p-2 border-b border-gray-200"
+                className="flex flex-col items-center md:flex-row justify-evenly mb-2 p-2 border-b border-gray-200"
               >
                 <span
                   className="text-sm max-w-44 text-gray-600 truncate"
