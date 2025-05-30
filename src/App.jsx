@@ -10,13 +10,15 @@ import LogoContainer from "./components/LogoContainer/LogoContainer";
 function App() {
   return (
     <Router>
-      <Gradient />
-      <LogoContainer />
-      <Routes>
-        <Route path="/" element={<ShortenUrl />} />
-        <Route path="/:slug" element={<RedirectPage />} />
-        <Route path="/404" element={<PageNotFound />} />
-      </Routes>
+      <main className="flex mt-20 md:mt-0  w-screen flex-col items-center justify-center">
+        <LogoContainer />
+        <Gradient />
+        <Routes>
+          <Route path="/" element={<ShortenUrl />} />
+          <Route path="/:slug" element={<RedirectPage />} />
+          <Route path="/404" element={<PageNotFound />} />
+        </Routes>
+      </main>
       <Footer />
     </Router>
   );

@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="bg-transparent absolute flex justify-center bottom-0 text-white py-6 px-4 mt-8 text-center md:text-left">
+    <footer className="z-50 w-full text-white h-10 py-6 px-4 text-center">
       <div className="text-sm text-center  text-gray-400">
         <p>
           &copy; {new Date().getFullYear()}{" "}

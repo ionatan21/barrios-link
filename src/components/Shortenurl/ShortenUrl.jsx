@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import "./ShortenUrl.css"; // Import your CSS file for styles
 
 const ShortenUrl = () => {
   const [originalUrl, setOriginalUrl] = useState("");
@@ -52,9 +53,17 @@ const ShortenUrl = () => {
     }
   };
 
+  const handleDelete = (indexToRemove) => {
+    const updatedLinks = links.filter((_, index) => index !== indexToRemove);
+    setLinks(updatedLinks);
+    localStorage.setItem("shortenedLinks", JSON.stringify(updatedLinks));
+  };
+
   return (
-    <div className="w-full animate-fade-in-down z-10 max-w-[90vw] md:max-w-max flex flex-col items-center bg-white shadow-lg rounded-xl p-10">
-      <h1 className="text-2xl md:text-5xl font-semibold mb-6">Shorten Your Link</h1>
+    <div className="w-full animate-fade-in-down z-10 max-w-[90vw] md:max-w-max flex flex-col items-center bg-white shadow-lg rounded-xl mb-4 p-10">
+      <h1 className="text-2xl md:text-5xl font-semibold mb-6">
+        Shorten Your Link
+      </h1>
       <Input
         className="w-full p-2 border border-gray-300 rounded-lg"
         type="text"
@@ -64,7 +73,7 @@ const ShortenUrl = () => {
       />
       <Button
         onClick={handleShorten}
-        className="w-32 mt-3 text-white font-medium py-2 rounded-lg cursor-pointer"
+        className="w-32 mt-3 text-white bg-black opacity-75 hover:opacity-100 font-medium py-2 rounded-lg cursor-pointer"
       >
         Shorten!
       </Button>
@@ -84,15 +93,13 @@ const ShortenUrl = () => {
       )}
 
       {links.length > 0 && (
-        <div className="mt-6 w-full">
-          <h2 className="text-lg text-center font-semibold mb-2">
-            Your Links
-          </h2>
-          <ul className="w-full">
+        <div className="mt-6 w-full ">
+          <h2 className="text-lg text-center font-semibold mb-2">Your Links</h2>
+          <ul className="w-full max-h-40 overflow-y-auto">
             {links.map((link, index) => (
               <li
                 key={index}
-                className="flex flex-col items-center md:flex-row justify-evenly mb-2 p-2 border-b border-gray-200"
+                className="flex  flex-col items-center md:flex-row gap-4 justify-between mb-2 p-2 border-b border-gray-200"
               >
                 <span
                   className="text-sm max-w-44 text-gray-600 truncate"
@@ -100,14 +107,22 @@ const ShortenUrl = () => {
                 >
                   {link.originalUrl}
                 </span>
-                <a
-                  href={link.shortUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 text-sm underline"
-                >
-                  {link.linkalt}
-                </a>
+
+                <div className="flex flex-row  justify-between gap-2">
+                  <a
+                    href={link.shortUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 text-sm underline"
+                  >
+                    {link.linkalt}
+                  </a>
+
+                  <button
+                    className="delete"
+                    onClick={() => handleDelete(index)}
+                  />
+                </div>
               </li>
             ))}
           </ul>

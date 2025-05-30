@@ -1,68 +1,87 @@
 /* src/styles/ShortenUrl.css */
 
 .shorten-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    padding: 24px;
-    width: 100%;
-    max-width: 600px;
-  }
-  
-  .shorten-title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 16px;
-  }
-  
-  .shorten-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    outline: none;
-    transition: border-color 0.3s ease-in-out;
-  }
-  
-  .shorten-input:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-  }
-  
-  .shorten-button {
-    width: 100%;
-    margin-top: 12px;
-    cursor: pointer;
-    opacity: 0.8;
-    background-color: #2563eb;
-    color: white;
-    font-weight: 500;
-    padding: 10px;
-    border-radius: 8px;
-    transition: opacity 0.3s ease-in-out;
-    border: none;
-  }
-  
-  .shorten-button:hover {
-    opacity: 1;
-  }
-  
-  .shorten-result {
-    margin-top: 16px;
-    font-weight: 600;
-    color: #2563eb;
-  }
-  
-  .shorten-result a {
-    text-decoration: none;
-    color: #2563eb;
-  }
-  
-  .shorten-result a:hover {
-    text-decoration: underline;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.shorten-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 16px;
+}
+
+.shorten-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s ease-in-out;
+}
+
+.shorten-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+.shorten-button {
+  width: 100%;
+  margin-top: 12px;
+  cursor: pointer;
+  opacity: 0.8;
+  background-color: #2563eb;
+  color: white;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 8px;
+  transition: opacity 0.3s ease-in-out;
+  border: none;
+}
+
+.shorten-button:hover {
+  opacity: 1;
+}
+
+.shorten-result {
+  margin-top: 16px;
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.shorten-result a {
+  text-decoration: none;
+  color: #2563eb;
+}
+
+.shorten-result a:hover {
+  text-decoration: underline;
+}
+
+.delete {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background-image: url("xmark-solid.svg");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 1000;
+  opacity: 0.4;
+  cursor: pointer;
+}
+
+.delete:hover {
+  opacity: 1;
+}
