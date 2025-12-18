@@ -11,6 +11,7 @@ const ShortenUrl = () => {
   const [links, setLinks] = useState([]);
   const [isHover, setIsHover] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const cardRef = useRef(null);
   const shineRef = useRef(null);
@@ -45,7 +46,7 @@ const ShortenUrl = () => {
 
   // Efecto 3D que sigue al cursor cuando NO está en hover
   useEffect(() => {
-    if (isHover) return; // Cancela la animación en hover
+    if (isHover || isInputFocused) return; // Cancela la animación en hover o cuando se escribe
 
     const onMouseMove = (e) => {
       const wWidth = window.innerWidth;
@@ -86,7 +87,63 @@ const ShortenUrl = () => {
 
     window.addEventListener("mousemove", onMouseMove);
     return () => window.removeEventListener("mousemove", onMouseMove);
-  }, [isHover]);
+  }, [isHover, isInputFocused]);
+
+  // Efecto 3D usando giroscopio en móviles
+  useEffect(() => {
+    if (isHover || isInputFocused) return;
+
+    // Detectar si es un dispositivo móvil con giroscopio
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (!isMobile) return;
+
+    const handleOrientation = (event) => {
+      const { beta, gamma } = event; // beta: inclinación adelante/atrás, gamma: izquierda/derecha
+
+      // Normalizar los valores (-180 a 180 para beta, -90 a 90 para gamma)
+      const normalizedBeta = Math.max(-45, Math.min(45, beta || 0)); // Limitar rango
+      const normalizedGamma = Math.max(-45, Math.min(45, gamma || 0));
+
+      const around1 = normalizedBeta * 0.3; // Rotación X
+      const around2 = normalizedGamma * 0.3; // Rotación Y
+
+      const trans1 = normalizedGamma * 0.4; // Translación X
+      const trans2 = normalizedBeta * 0.4; // Translación Y
+
+      // Calcular ángulo para el brillo
+      const angle = Math.atan2(normalizedBeta, normalizedGamma) * (180 / Math.PI);
+
+      if (shineRef.current) {
+        shineRef.current.style.background =
+          `linear-gradient(${angle}deg, rgba(255,255,255,${Math.abs(normalizedBeta) / 100 + 0.2}) 0%, rgba(255,255,255,0) 80%)`;
+      }
+
+      if (cardRef.current) {
+        cardRef.current.style.transform =
+          `translate3d(${trans1}px, ${trans2}px, 0) scale(1) rotateX(${around1}deg) rotateY(${around2}deg)`;
+      }
+
+      if (shadowRef.current) {
+        shadowRef.current.style.transform =
+          `scale(0.95, 0.95) translateX(${normalizedGamma * -0.2}px) translateY(${normalizedBeta * -0.2}px) rotateY(${normalizedGamma * 0.2}deg) rotateX(${normalizedBeta * -0.2}deg)`;
+      }
+    };
+
+    // Pedir permiso en iOS 13+
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission()
+        .then(permissionState => {
+          if (permissionState === 'granted') {
+            window.addEventListener('deviceorientation', handleOrientation);
+          }
+        })
+        .catch(console.error);
+    } else {
+      window.addEventListener('deviceorientation', handleOrientation);
+    }
+
+    return () => window.removeEventListener('deviceorientation', handleOrientation);
+  }, [isHover, isInputFocused]);
 
   const handleShorten = async () => {
     if (!originalUrl) return alert("Por favor, ingresa una URL válida.");
@@ -172,6 +229,8 @@ const ShortenUrl = () => {
         value={originalUrl}
         onInput={(e) => setOriginalUrl(e.target.value)}
         onMouseEnter={cancelAndReset}
+        onFocus={() => setIsInputFocused(true)}
+        onBlur={() => setIsInputFocused(false)}
       />
       <Button
         onClick={handleShorten}
