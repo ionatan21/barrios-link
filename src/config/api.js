@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'https://barrios-link-backend.ve
 
 export const API_ENDPOINTS = {
   createUrl: `${API_URL}/api/create`,
-  getUrl: (slug) => `${API_URL}/${slug}`
+  getUrl: (slug) => `${API_URL}/api/${slug}`
 };
 
 export default API_URL;
