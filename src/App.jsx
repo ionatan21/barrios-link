@@ -13,6 +13,7 @@ function App() {
     <Router>
       <main className="flex mt-30 md:mt-10  w-screen flex-col items-center justify-center">
         <LogoContainer />
+        <Gradient />
         <ShaderGradientCanvas
           style={{ position: 'absolute', inset: 0, pointerEvents: 'none', touchAction: 'none' }}
           pixelDensity={1.5}

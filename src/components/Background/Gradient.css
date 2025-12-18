@@ -8,7 +8,7 @@
   background-attachment: fixed;
   background-size: cover;
   background-position: center;
-  background: linear-gradient(90deg, #ff8c00, cyan);
+  background: linear-gradient(90deg, #ff8c00, #009dff);
 
   &::before {
     mask-image: linear-gradient(to bottom, transparent, black);

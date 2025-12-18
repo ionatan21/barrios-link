@@ -7,7 +7,7 @@ export default function PageNotFound() {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate("/"); // Redirect to the homepage after 3 seconds
-    }, 2500);
+    }, 25000);
 
     return () => clearTimeout(timer); // Cleanup the timer on component unmount
   });
