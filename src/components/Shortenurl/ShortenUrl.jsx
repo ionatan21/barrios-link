@@ -10,6 +10,26 @@ const ShortenUrl = () => {
   const [shortalt, setshortalt] = useState("");
   const [links, setLinks] = useState([]);
 
+  // Validar si la URL es válida
+  const isValidUrl = (url) => {
+    if (!url) return false;
+    try {
+      // Si no tiene protocolo, agregar https://
+      const urlToValidate = url.match(/^https?:\/\//) ? url : `https://${url}`;
+      new URL(urlToValidate);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  // Normalizar URL agregando protocolo si no lo tiene
+  const normalizeUrl = (url) => {
+    return url.match(/^https?:\/\//) ? url : `https://${url}`;
+  };
+
+  const isButtonDisabled = !isValidUrl(originalUrl);
+
   // Cargar enlaces guardados en localStorage al inicio
   useEffect(() => {
     const storedLinks =
@@ -20,13 +40,15 @@ const ShortenUrl = () => {
   const handleShorten = async () => {
     if (!originalUrl) return alert("Por favor, ingresa una URL válida.");
 
+    const urlToShorten = normalizeUrl(originalUrl);
+
     try {
       const response = await fetch(
         API_ENDPOINTS.createUrl,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ url: originalUrl }),
+          body: JSON.stringify({ url: urlToShorten }),
         }
       );
 
@@ -37,7 +59,7 @@ const ShortenUrl = () => {
 
         // Agregar nuevo link a la lista
         const newLinks = [
-          { originalUrl, linkalt: linkalt, shortUrl: newShortUrl },
+          { originalUrl: urlToShorten, linkalt: linkalt, shortUrl: newShortUrl },
           ...links,
         ];
         setLinks(newLinks);
@@ -66,7 +88,7 @@ const ShortenUrl = () => {
         Shorten Your Link
       </h1>
       <Input
-        className="w-full p-2 border border-gray-300 rounded-lg"
+        className="w-full p-2 border border-gray-300 focus:outline-orange-800 rounded-lg"
         type="text"
         placeholder="Paste your link here..."
         value={originalUrl}
@@ -74,7 +96,8 @@ const ShortenUrl = () => {
       />
       <Button
         onClick={handleShorten}
-        className="w-32 mt-3 text-white bg-black opacity-75 hover:opacity-100 font-medium py-2 rounded-lg cursor-pointer"
+        disabled={isButtonDisabled}
+        className="w-32 mt-3 text-white bg-black opacity-75 hover:opacity-100 hover:scale-105 font-medium py-2 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
       >
         Shorten!
       </Button>
