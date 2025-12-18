@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { API_ENDPOINTS } from "@/config/api";
 
 const RedirectPage = () => {
   const { slug } = useParams();
@@ -8,7 +9,7 @@ const RedirectPage = () => {
  useEffect(() => {
     const fetchUrl = async () => {
       try {
-        const response = await fetch(`https://barrios-link-backend.vercel.app/api/${slug}`);
+        const response = await fetch(API_ENDPOINTS.getUrl(slug));
         if (!response.ok) throw new Error("URL not found");
 
         const data = await response.json();

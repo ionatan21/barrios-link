@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { API_ENDPOINTS } from "@/config/api";
 import "./ShortenUrl.css"; // Import your CSS file for styles
 
 const ShortenUrl = () => {
@@ -21,7 +22,7 @@ const ShortenUrl = () => {
 
     try {
       const response = await fetch(
-        "https://barrios-link-backend.vercel.app/api/create",
+        API_ENDPOINTS.createUrl,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
