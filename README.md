@@ -1,12 +1,64 @@
-# React + Vite
+# Barrios Link
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern URL shortener built with React and Vite.
 
-Currently, two official plugins are available:
+Live demo: [barrios-link](https://barrios-link.vercel.app/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- Shorten long URLs into compact links
+- Clean and modern user interface
+- Animated gradient background
+- Copy shortened URLs with one click
+- View and manage your shortened links
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tech Stack
+
+- React 19
+- Vite
+- React Router DOM
+- Tailwind CSS
+- shadcn/ui components
+- Three.js for 3D effects
+
+## Installation
+
+1. Clone the repository
+2. Install dependencies:
+```bash
+pnpm install
+```
+
+## Usage
+
+Start the development server:
+```bash
+pnpm dev
+```
+
+Build for production:
+```bash
+pnpm build
+```
+
+Preview production build:
+```bash
+pnpm preview
+```
+
+## Project Structure
+
+```
+src/
+├── components/       # React components
+│   ├── Shortenurl/  # Main URL shortener component
+│   ├── Redirect/    # URL redirect handler
+│   ├── 404/         # Not found page
+│   └── ui/          # Reusable UI components
+├── config/          # Configuration files
+└── lib/             # Utility functions
+```
+
+## License
+
+MIT
