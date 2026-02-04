@@ -5,13 +5,24 @@ import { API_ENDPOINTS } from "@/config/api";
 import "./ShortenUrl.css"; // Import your CSS file for styles
 
 const ShortenUrl = () => {
-  const [originalUrl, setOriginalUrl] = useState("");
-  const [shortUrl, setShortUrl] = useState("");
-  const [shortalt, setshortalt] = useState("");
+  const [urlState, setUrlState] = useState({
+    original: "",
+    short: "",
+    shortAlt: ""
+  });
+  
+  const [requestState, setRequestState] = useState({
+    isLoading: false,
+    error: ""
+  });
+  
+  const [uiState, setUiState] = useState({
+    isHover: false,
+    isInputFocused: false
+  });
+  
   const [links, setLinks] = useState([]);
-  const [isHover, setIsHover] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isInputFocused, setIsInputFocused] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const cardRef = useRef(null);
   const shineRef = useRef(null);
@@ -35,7 +46,7 @@ const ShortenUrl = () => {
     return url.match(/^https?:\/\//) ? url : `https://${url}`;
   };
 
-  const isButtonDisabled = !isValidUrl(originalUrl) || isLoading;
+  const isButtonDisabled = !isValidUrl(urlState.original) || requestState.isLoading;
 
   // Cargar enlaces guardados en localStorage al inicio
   useEffect(() => {
@@ -46,7 +57,7 @@ const ShortenUrl = () => {
 
   // Efecto 3D que sigue al cursor cuando NO está en hover
   useEffect(() => {
-    if (isHover || isInputFocused) return; // Cancela la animación en hover o cuando se escribe
+    if (uiState.isHover || uiState.isInputFocused) return; // Cancela la animación en hover o cuando se escribe
 
     const onMouseMove = (e) => {
       const wWidth = window.innerWidth;
@@ -87,11 +98,11 @@ const ShortenUrl = () => {
 
     window.addEventListener("mousemove", onMouseMove);
     return () => window.removeEventListener("mousemove", onMouseMove);
-  }, [isHover, isInputFocused]);
+  }, [uiState.isHover, uiState.isInputFocused]);
 
   // Efecto 3D usando giroscopio en móviles
   useEffect(() => {
-    if (isHover || isInputFocused) return;
+    if (uiState.isHover || uiState.isInputFocused) return;
 
     // Detectar si es un dispositivo móvil con giroscopio
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -143,13 +154,16 @@ const ShortenUrl = () => {
     }
 
     return () => window.removeEventListener('deviceorientation', handleOrientation);
-  }, [isHover, isInputFocused]);
+  }, [uiState.isHover, uiState.isInputFocused]);
 
   const handleShorten = async () => {
-    if (!originalUrl) return alert("Por favor, ingresa una URL válida.");
+    if (!urlState.original) {
+      setRequestState(prev => ({ ...prev, error: "Por favor, ingresa una URL válida." }));
+      return;
+    }
 
-    const urlToShorten = normalizeUrl(originalUrl);
-    setIsLoading(true);
+    const urlToShorten = normalizeUrl(urlState.original);
+    setRequestState({ isLoading: true, error: "" });
 
     try {
       const response = await fetch(
@@ -162,6 +176,20 @@ const ShortenUrl = () => {
       );
 
       const data = await response.json();
+      
+      if (!response.ok) {
+        // Manejar errores específicos del servidor
+        if (response.status === 429) {
+          setRequestState(prev => ({ ...prev, error: data.error || "Límite alcanzado. Inténtalo mañana." }));
+        } else if (response.status === 400) {
+          setRequestState(prev => ({ ...prev, error: data.error || "URL inválida. Por favor verifica la URL." }));
+        } else {
+          setRequestState(prev => ({ ...prev, error: data.error || "Error al acortar la URL. Inténtalo de nuevo." }));
+        }
+        setRequestState(prev => ({ ...prev, isLoading: false }));
+        return;
+      }
+
       if (data.slug) {
         const newShortUrl = `https://barrios-link.vercel.app//${data.slug}`;
         const linkalt = `barrios-link.vercel.app/${data.slug}`;
@@ -174,16 +202,18 @@ const ShortenUrl = () => {
         setLinks(newLinks);
         localStorage.setItem("shortenedLinks", JSON.stringify(newLinks));
 
-        setShortUrl(newShortUrl);
-        setshortalt(linkalt);
+        setUrlState({
+          original: urlState.original,
+          short: newShortUrl,
+          shortAlt: linkalt
+        });
+        setRequestState({ isLoading: false, error: "" });
       } else {
-        alert("Error al acortar la URL");
+        setRequestState({ isLoading: false, error: "Error al acortar la URL. Inténtalo de nuevo." });
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Hubo un problema al conectar con el servidor.");
-    } finally {
-      setIsLoading(false);
+      setRequestState({ isLoading: false, error: "Hubo un problema al conectar con el servidor. Verifica tu conexión." });
     }
   };
 
@@ -193,9 +223,19 @@ const ShortenUrl = () => {
     localStorage.setItem("shortenedLinks", JSON.stringify(updatedLinks));
   };
 
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(urlState.short);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Error al copiar:", err);
+    }
+  };
+
   // Cancelar animación y resetear estilos al entrar en hover
   const cancelAndReset = () => {
-    setIsHover(true);
+    setUiState(prev => ({ ...prev, isHover: true }));
 
     if (shineRef.current) {
       shineRef.current.style.background =
@@ -207,7 +247,7 @@ const ShortenUrl = () => {
     if (shadowRef.current) shadowRef.current.style.transform = "none";
   };
 
-  const resume = () => setIsHover(false);
+  const resume = () => setUiState(prev => ({ ...prev, isHover: false }));
 
   return (
     <div className="card-wrapper-3d w-full max-w-[90vw] md:max-w-max">
@@ -226,19 +266,26 @@ const ShortenUrl = () => {
         className="w-full p-2 border border-gray-300 focus:outline-orange-800 rounded-lg"
         type="text"
         placeholder="Paste your link here..."
-        value={originalUrl}
-        onInput={(e) => setOriginalUrl(e.target.value)}
+        value={urlState.original}
+        onInput={(e) => setUrlState(prev => ({ ...prev, original: e.target.value }))}
         onMouseEnter={cancelAndReset}
-        onFocus={() => setIsInputFocused(true)}
-        onBlur={() => setIsInputFocused(false)}
+        onFocus={() => setUiState(prev => ({ ...prev, isInputFocused: true }))}
+        onBlur={() => setUiState(prev => ({ ...prev, isInputFocused: false }))}
       />
+
+      {requestState.error && (
+        <div className="w-full mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm text-center">
+          {requestState.error}
+        </div>
+      )}
+
       <Button
         onClick={handleShorten}
         disabled={isButtonDisabled}
         onMouseEnter={cancelAndReset}
         className="w-32 mt-3 z-100 select-none text-white bg-black opacity-75 hover:opacity-100 hover:scale-105 font-medium py-2 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
       >
-        {isLoading ? (
+        {requestState.isLoading ? (
           <>
             <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -251,18 +298,41 @@ const ShortenUrl = () => {
         )}
       </Button>
 
-      {shortUrl && (
-        <p className="mt-4 text-center">
-          <strong>Short Link:</strong>{" "}
-          <a
-            href={shortUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline"
+      {urlState.short && (
+        <div className="mt-4 w-full flex flex-col items-center gap-2">
+          <p className="text-center">
+            <strong>Short Link:</strong>{" "}
+            <a
+              href={urlState.short}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline"
+            >
+              {urlState.shortAlt}
+            </a>
+          </p>
+          <Button
+            onClick={copyToClipboard}
+            onMouseEnter={cancelAndReset}
+            className="w-auto px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2"
           >
-            {shortalt}
-          </a>
-        </p>
+            {copied ? (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Copied!
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                Copy Link
+              </>
+            )} 
+          </Button>
+        </div>
       )}
 
       {links.length > 0 && (
