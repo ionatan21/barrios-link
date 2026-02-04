@@ -314,7 +314,7 @@ const ShortenUrl = () => {
           <Button
             onClick={copyToClipboard}
             onMouseEnter={cancelAndReset}
-            className="w-auto px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2"
+            className="w-auto cursor-pointer px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2"
           >
             {copied ? (
               <>
