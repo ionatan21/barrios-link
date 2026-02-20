@@ -3,6 +3,7 @@ import LinkShortenerSection from "./components/LinkShortenerSection/LinkShortene
 import RedirectPage from "./components/Redirect/RedirectPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PageNotFound from "./components/404/PageNotFound";
+import TooManyRequests from "./components/429/TooManyRequests";
 import Footer from "./components/Footer/Footer";
 import Gradient from "./components/Background/Gradient";
 import LogoContainer from "./components/LogoContainer/LogoContainer";
@@ -74,6 +75,7 @@ function App() {
           <Route path="/" element={<LinkShortenerSection />} />
           <Route path="/:slug" element={<RedirectPage />} />
           <Route path="/404" element={<PageNotFound />} />
+          <Route path="/429" element={<TooManyRequests />} />
         </Routes>
 
         <Footer />

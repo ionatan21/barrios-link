@@ -10,10 +10,12 @@ const RedirectPage = () => {
     const fetchUrl = async () => {
       try {
         const response = await fetch(API_ENDPOINTS.getUrl(slug));
-        if (!response.ok) throw new Error("URL not found");
 
-        const data = await response.json();
-        window.location.href = data.url_original; // Redirección
+        if (response.status === 429) {
+          navigate("/429");
+          return;
+        }
+
 
       } catch (error) {
         console.error("Error fetching URL:", error);
