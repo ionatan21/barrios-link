@@ -1,5 +1,5 @@
 import "./App.css";
-import ShortenUrl from "./components/Shortenurl/ShortenUrl";
+import LinkShortenerSection from "./components/LinkShortenerSection/LinkShortenerSection";
 import RedirectPage from "./components/Redirect/RedirectPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PageNotFound from "./components/404/PageNotFound";
@@ -71,7 +71,7 @@ function App() {
         )}
 
         <Routes>
-          <Route path="/" element={<ShortenUrl />} />
+          <Route path="/" element={<LinkShortenerSection />} />
           <Route path="/:slug" element={<RedirectPage />} />
           <Route path="/404" element={<PageNotFound />} />
         </Routes>
