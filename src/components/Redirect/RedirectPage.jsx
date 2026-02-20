@@ -16,6 +16,10 @@ const RedirectPage = () => {
           return;
         }
 
+        if (!response.ok) throw new Error("URL not found");
+
+        const data = await response.json();
+        window.location.href = data.url_original;
 
       } catch (error) {
         console.error("Error fetching URL:", error);
