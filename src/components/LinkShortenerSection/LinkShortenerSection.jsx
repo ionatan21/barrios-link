@@ -37,7 +37,9 @@ const LinkShortenerSection = () => {
   return (
     <>
       <ShortenUrl onLinkCreated={() => fetchUsage({ force: true })} />
-      <UsageStats links={usage.links} redirects={usage.redirects} />
+      {usage.links != "0" && (
+        <UsageStats links={usage.links} redirects={usage.redirects} />
+      )}
     </>
   );
 };
