@@ -2,7 +2,7 @@
 
 A modern URL shortener built with React and Vite.
 
-Live demo: [barrios-link](https://barrios-link.vercel.app/)
+Live demo: [barrios-link](https://ba-lnk.vercel.app//)
 
 ## Features
 
