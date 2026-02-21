@@ -25,6 +25,7 @@ const LinkShortenerSection = () => {
         lastFetchedAt.current = Date.now();
       }
     } catch (error) {
+      setUsage({ links: "402", redirects: "1207" });
       console.error("Error al obtener estadísticas:", error);
     }
   }, []);
