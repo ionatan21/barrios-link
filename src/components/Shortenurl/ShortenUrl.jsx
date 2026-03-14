@@ -276,7 +276,7 @@ const ShortenUrl = ({ onLinkCreated }) => {
       <div className="card-shadow-3d" ref={shadowRef} />
       <div
         ref={cardRef}
-        className="w-full z-10 max-w-[90vw] md:max-w-max flex flex-col items-center bg-white shadow-lg rounded-xl mb-4 p-10 card-3d-container"
+        className="w-full z-10 max-w-[90vw] md:max-w-max flex flex-col items-center bg-white shadow-lg rounded-xl mb-4 px-6 py-9 md:p-10 card-3d-container"
         onMouseEnter={cancelAndReset}
         onMouseLeave={resume}
       >
@@ -344,7 +344,7 @@ const ShortenUrl = ({ onLinkCreated }) => {
 
         {urlState.short && (
           <div className="mt-4 w-full flex flex-col items-center gap-2">
-            <p className="text-center">
+            <p className="text-center text-xs md:text-sm">
               <strong>Short Link:</strong>{" "}
               <a
                 href={urlState.short}
