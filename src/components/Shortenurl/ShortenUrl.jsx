@@ -411,7 +411,7 @@ const ShortenUrl = ({ onLinkCreated }) => {
                   className="flex  flex-col items-center md:flex-row gap-4 justify-between mb-2 p-2 border-b border-gray-200"
                 >
                   <span
-                    className="text-sm w-full text-gray-600 truncate"
+                    className="text-sm w-full text-center text-gray-600 truncate"
                     title={link.originalUrl}
                   >
                     {link.originalUrl}
