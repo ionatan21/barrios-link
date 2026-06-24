@@ -36,7 +36,7 @@ export default async function handler(req, res) {
 
     if (!snap.exists) {
       res.setHeader("Cache-Control", "public, max-age=60, s-maxage=60");
-      return res.status(404).json({ error: "Link no encontrado" });
+      return res.redirect(302, "/404");
     }
 
     const data = snap.data();
