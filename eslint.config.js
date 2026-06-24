@@ -30,4 +30,10 @@ export default [
       ],
     },
   },
+  {
+    files: ['api/**/*.js', 'lib/**/*.js', 'vite.config.js'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
 ]

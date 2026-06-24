@@ -1,14 +1,16 @@
-// Configuración de la API
-// En desarrollo usa localhost:3000
-// En producción usa el backend de Vercel
+// Configuracion de la API
+// En produccion, las funciones serverless viven en el mismo dominio.
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://barrios-link-backend.vercel.app';
-const APP_URL = import.meta.env.VITE_APP_URL || 'https://b-lnk.vercel.app/';
+const API_URL = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const APP_URL = (
+  import.meta.env.VITE_APP_URL ||
+  (typeof window !== 'undefined' ? window.location.origin : 'https://b-lnk.vercel.app')
+).replace(/\/$/, '');
 
 export const API_ENDPOINTS = {
   createUrl: `${API_URL}/api/create`,
   getUrl: (slug) => `${API_URL}/api/${slug}`,
-  getUsage: `${API_URL}/api/usage`
+  getUsage: `${API_URL}/api/usage`,
 };
 
 export { APP_URL };

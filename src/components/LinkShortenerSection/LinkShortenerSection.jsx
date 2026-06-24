@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { API_ENDPOINTS } from "@/config/api";
+import { API_ENDPOINTS } from "../../config/api";
 import ShortenUrl from "@/components/Shortenurl/ShortenUrl";
 import UsageStats from "@/components/UsageStats/UsageStats";
 
