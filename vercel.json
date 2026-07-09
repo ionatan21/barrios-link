@@ -1,5 +1,5 @@
 {
-  "devCommand": "node scripts/vercel-vite-dev.mjs",
+  "devCommand": "node scripts/vercel-api-dev.mjs",
   "rewrites": [
     { "source": "/404", "destination": "/index.html" },
     { "source": "/429", "destination": "/index.html" },

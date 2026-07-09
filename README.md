@@ -36,6 +36,16 @@ Start the development server:
 pnpm dev
 ```
 
+This starts both local services:
+- API backend: `http://localhost:3000`
+- Vite app: `http://localhost:5173`
+
+You can also start them separately:
+```bash
+pnpm dev:api
+pnpm dev:app
+```
+
 Build for production:
 ```bash
 pnpm build

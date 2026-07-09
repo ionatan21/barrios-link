@@ -8,7 +8,9 @@
     "node": "22.x"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/dev.mjs",
+    "dev:app": "vite --host 127.0.0.1 --port 5173 --strictPort",
+    "dev:api": "vercel dev --listen 3000",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -25,6 +27,7 @@
     "firebase-admin": "^13.0.1",
     "lucide-react": "^0.487.0",
     "nanoid": "^5.1.5",
+    "picomatch": "^4.0.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.4.1",

@@ -1,14 +1,43 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Check,
+  Copy,
+  ExternalLink,
+  Link2,
+  LoaderCircle,
+  Search,
+  Settings2,
+  Trash2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { API_ENDPOINTS, APP_URL } from "@/config/api";
-import "./ShortenUrl.css"; // Import your CSS file for styles
+import "./ShortenUrl.css";
+
+const STORAGE_KEY = "shortenedLinks";
+
+const getStoredLinks = () => {
+  try {
+    const storedLinks = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return Array.isArray(storedLinks) ? storedLinks : [];
+  } catch {
+    return [];
+  }
+};
+
+const formatDate = (date) =>
+  new Intl.DateTimeFormat("es", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(date);
 
 const ShortenUrl = ({ onLinkCreated }) => {
   const [urlState, setUrlState] = useState({
     original: "",
     short: "",
     shortAlt: "",
+    createdAt: "",
   });
 
   const [requestState, setRequestState] = useState({
@@ -23,16 +52,16 @@ const ShortenUrl = ({ onLinkCreated }) => {
 
   const [links, setLinks] = useState([]);
   const [copied, setCopied] = useState(false);
+  const [mode, setMode] = useState("shorten");
+  const [search, setSearch] = useState("");
 
   const cardRef = useRef(null);
   const shineRef = useRef(null);
   const shadowRef = useRef(null);
 
-  // Validar si la URL es válida
   const isValidUrl = (url) => {
     if (!url) return false;
     try {
-      // Si no tiene protocolo, agregar https://
       const urlToValidate = url.match(/^https?:\/\//) ? url : `https://${url}`;
       new URL(urlToValidate);
       return true;
@@ -41,7 +70,6 @@ const ShortenUrl = ({ onLinkCreated }) => {
     }
   };
 
-  // Normalizar URL agregando protocolo si no lo tiene
   const normalizeUrl = (url) => {
     return url.match(/^https?:\/\//) ? url : `https://${url}`;
   };
@@ -49,48 +77,48 @@ const ShortenUrl = ({ onLinkCreated }) => {
   const isButtonDisabled =
     !isValidUrl(urlState.original) || requestState.isLoading;
 
-  // Cargar enlaces guardados en localStorage al inicio
+  const filteredLinks = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return links;
+
+    return links.filter((link) => {
+      const original = link.originalUrl?.toLowerCase() || "";
+      const short = (link.linkalt || link.shortUrl || "").toLowerCase();
+      return original.includes(query) || short.includes(query);
+    });
+  }, [links, search]);
+
   useEffect(() => {
-    const storedLinks =
-      JSON.parse(localStorage.getItem("shortenedLinks")) || [];
-    setLinks(storedLinks);
+    setLinks(getStoredLinks());
   }, []);
 
-  // Efecto 3D que sigue al cursor cuando NO está en hover
   useEffect(() => {
-    if (uiState.isHover || uiState.isInputFocused) return; // Cancela la animación en hover o cuando se escribe
+    if (uiState.isHover || uiState.isInputFocused) return;
 
     const onMouseMove = (e) => {
       const wWidth = window.innerWidth;
       const wHeight = window.innerHeight;
-
       const x = e.pageX;
       const y = e.pageY;
-
       const mouseFromCenterX = x - wWidth / 2;
       const mouseFromCenterY = y - wHeight / 2;
-
-      const around1 = -1 * (((y * 100) / wHeight) * 0.15 - 7.5); // deg
-      const around2 = 1 * (((x * 100) / wWidth) * 0.15 - 7.5); // deg
-
-      const trans1 = (mouseFromCenterX / wWidth) * 20; // px centrado
-      const trans2 = (mouseFromCenterY / wHeight) * 20; // px centrado
-
-      const dy = y - wHeight / 2;
-      const dx = x - wWidth / 2;
-      const theta = Math.atan2(dy, dx);
+      const around1 = -1 * (((y * 100) / wHeight) * 0.08 - 4);
+      const around2 = 1 * (((x * 100) / wWidth) * 0.08 - 4);
+      const trans1 = (mouseFromCenterX / wWidth) * 10;
+      const trans2 = (mouseFromCenterY / wHeight) * 10;
+      const theta = Math.atan2(y - wHeight / 2, x - wWidth / 2);
       const angle = (theta * 180) / Math.PI - 90;
 
       if (shineRef.current) {
-        shineRef.current.style.background = `linear-gradient(${angle}deg, rgba(255,255,255,${(y / wHeight) * 0.5}) 0%, rgba(255,255,255,0) 80%)`;
+        shineRef.current.style.background = `linear-gradient(${angle}deg, rgba(255,255,255,${(y / wHeight) * 0.22}) 0%, rgba(255,255,255,0) 72%)`;
       }
 
       if (cardRef.current) {
-        cardRef.current.style.transform = `translate3d(${trans1}px, ${trans2}px, 0) scale(1) rotateX(${around1}deg) rotateY(${around2}deg)`;
+        cardRef.current.style.transform = `translate3d(${trans1}px, ${trans2}px, 0) rotateX(${around1}deg) rotateY(${around2}deg)`;
       }
 
       if (shadowRef.current) {
-        shadowRef.current.style.transform = `scale(0.95, 0.95) translateX(${mouseFromCenterX * -0.02 + 8}px) translateY(${mouseFromCenterY * -0.02 + 8}px) rotateY(${(mouseFromCenterX / 25) * 0.5}deg) rotateX(${mouseFromCenterY / -25}deg)`;
+        shadowRef.current.style.transform = `translateX(${mouseFromCenterX * -0.01}px) translateY(${mouseFromCenterY * -0.01}px)`;
       }
     };
 
@@ -98,70 +126,17 @@ const ShortenUrl = ({ onLinkCreated }) => {
     return () => window.removeEventListener("mousemove", onMouseMove);
   }, [uiState.isHover, uiState.isInputFocused]);
 
-  // Efecto 3D usando giroscopio en móviles
-  useEffect(() => {
-    if (uiState.isHover || uiState.isInputFocused) return;
-
-    // Detectar si es un dispositivo móvil con giroscopio
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (!isMobile) return;
-
-    const handleOrientation = (event) => {
-      const { beta, gamma } = event; // beta: inclinación adelante/atrás, gamma: izquierda/derecha
-
-      // Normalizar los valores (-180 a 180 para beta, -90 a 90 para gamma)
-      const normalizedBeta = Math.max(-45, Math.min(45, beta || 0)); // Limitar rango
-      const normalizedGamma = Math.max(-45, Math.min(45, gamma || 0));
-
-      const around1 = normalizedBeta * 0.3; // Rotación X
-      const around2 = normalizedGamma * 0.3; // Rotación Y
-
-      const trans1 = normalizedGamma * 0.4; // Translación X
-      const trans2 = normalizedBeta * 0.4; // Translación Y
-
-      // Calcular ángulo para el brillo
-      const angle =
-        Math.atan2(normalizedBeta, normalizedGamma) * (180 / Math.PI);
-
-      if (shineRef.current) {
-        shineRef.current.style.background = `linear-gradient(${angle}deg, rgba(255,255,255,${Math.abs(normalizedBeta) / 100 + 0.2}) 0%, rgba(255,255,255,0) 80%)`;
-      }
-
-      if (cardRef.current) {
-        cardRef.current.style.transform = `translate3d(${trans1}px, ${trans2}px, 0) scale(1) rotateX(${around1}deg) rotateY(${around2}deg)`;
-      }
-
-      if (shadowRef.current) {
-        shadowRef.current.style.transform = `scale(0.95, 0.95) translateX(${normalizedGamma * -0.2}px) translateY(${normalizedBeta * -0.2}px) rotateY(${normalizedGamma * 0.2}deg) rotateX(${normalizedBeta * -0.2}deg)`;
-      }
-    };
-
-    // Pedir permiso en iOS 13+
-    if (
-      typeof DeviceOrientationEvent !== "undefined" &&
-      typeof DeviceOrientationEvent.requestPermission === "function"
-    ) {
-      DeviceOrientationEvent.requestPermission()
-        .then((permissionState) => {
-          if (permissionState === "granted") {
-            window.addEventListener("deviceorientation", handleOrientation);
-          }
-        })
-        .catch(console.error);
-    } else {
-      window.addEventListener("deviceorientation", handleOrientation);
-    }
-
-    return () =>
-      window.removeEventListener("deviceorientation", handleOrientation);
-  }, [uiState.isHover, uiState.isInputFocused]);
+  const persistLinks = (updatedLinks) => {
+    setLinks(updatedLinks);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedLinks));
+  };
 
   const handleShorten = async () => {
     if (!urlState.original) {
-      setRequestState((prev) => ({
-        ...prev,
-        error: "Por favor, ingresa una URL válida.",
-      }));
+      setRequestState({
+        isLoading: false,
+        error: "Ingresa una URL valida.",
+      });
       return;
     }
 
@@ -178,71 +153,55 @@ const ShortenUrl = ({ onLinkCreated }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        // Manejar errores específicos del servidor
-        if (response.status === 429) {
-          setRequestState((prev) => ({
-            ...prev,
-            error: data.error || "Límite alcanzado. Inténtalo mañana.",
-          }));
-        } else if (response.status === 400) {
-          setRequestState((prev) => ({
-            ...prev,
-            error: data.error || "URL inválida. Por favor verifica la URL.",
-          }));
-        } else {
-          setRequestState((prev) => ({
-            ...prev,
-            error: data.error || "Error al acortar la URL. Inténtalo de nuevo.",
-          }));
-        }
-        setRequestState((prev) => ({ ...prev, isLoading: false }));
+        setRequestState({
+          isLoading: false,
+          error: data.error || "No se pudo acortar la URL.",
+        });
         return;
       }
 
       if (data.slug) {
         const newShortUrl = `${APP_URL}/${data.slug}`;
         const linkalt = `${APP_URL.replace(/^https?:\/\//, "")}/${data.slug}`;
-
-        // Agregar nuevo link a la lista
+        const createdAt = new Date().toISOString();
         const newLinks = [
           {
             originalUrl: urlToShorten,
-            linkalt: linkalt,
+            linkalt,
             shortUrl: newShortUrl,
+            createdAt,
           },
           ...links,
         ];
-        setLinks(newLinks);
-        localStorage.setItem("shortenedLinks", JSON.stringify(newLinks));
 
+        persistLinks(newLinks);
         onLinkCreated?.();
-
         setUrlState({
-          original: urlState.original,
+          original: urlToShorten,
           short: newShortUrl,
           shortAlt: linkalt,
+          createdAt,
         });
         setRequestState({ isLoading: false, error: "" });
       } else {
         setRequestState({
           isLoading: false,
-          error: "Error al acortar la URL. Inténtalo de nuevo.",
+          error: "No se pudo acortar la URL.",
         });
       }
     } catch (error) {
       console.error("Error:", error);
       setRequestState({
         isLoading: false,
-        error:
-          "Hubo un problema al conectar con el servidor. Verifica tu conexión.",
+        error: "Hubo un problema al conectar con el servidor.",
       });
     }
   };
 
   const handleDelete = (indexToRemove) => {
-    const updatedLinks = links.filter((_, index) => index !== indexToRemove);
-    setLinks(updatedLinks);
-    localStorage.setItem("shortenedLinks", JSON.stringify(updatedLinks));
+    const linkToRemove = filteredLinks[indexToRemove];
+    const updatedLinks = links.filter((link) => link !== linkToRemove);
+    persistLinks(updatedLinks);
   };
 
   const copyToClipboard = async () => {
@@ -255,13 +214,12 @@ const ShortenUrl = ({ onLinkCreated }) => {
     }
   };
 
-  // Cancelar animación y resetear estilos al entrar en hover
   const cancelAndReset = () => {
     setUiState((prev) => ({ ...prev, isHover: true }));
 
     if (shineRef.current) {
       shineRef.current.style.background =
-        "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 60%)";
+        "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 58%)";
     }
     if (cardRef.current) {
       cardRef.current.style.transform = "none";
@@ -271,174 +229,161 @@ const ShortenUrl = ({ onLinkCreated }) => {
 
   const resume = () => setUiState((prev) => ({ ...prev, isHover: false }));
 
+  const showResult = Boolean(urlState.short);
+  const isAdmin = mode === "admin";
+  const cardState = isAdmin ? "admin" : showResult ? "result" : "idle";
+
   return (
-    <div className="card-wrapper-3d w-full max-w-[90vw] md:max-w-max">
+    <div className="card-wrapper-3d">
       <div className="card-shadow-3d" ref={shadowRef} />
-      <div
+      <section
         ref={cardRef}
-        className="w-full z-10 max-w-[90vw] md:max-w-2xl flex flex-col items-center bg-white shadow-lg rounded-xl mb-4 px-6 py-9 md:p-10 card-3d-container"
+        className={`shortener-card shortener-card--${cardState}`}
         onMouseEnter={cancelAndReset}
         onMouseLeave={resume}
       >
         <div className="card-shine-3d" ref={shineRef} />
-        <h1 className="text-2xl md:text-5xl font-semibold mb-6">
-          Shorten Your Link
-        </h1>
-        <Input
-          className="w-full p-2 border border-gray-300 focus:outline-orange-800 rounded-lg"
-          type="text"
-          placeholder="Paste your link here..."
-          value={urlState.original}
-          onInput={(e) =>
-            setUrlState((prev) => ({ ...prev, original: e.target.value }))
-          }
-          onMouseEnter={cancelAndReset}
-          onFocus={() =>
-            setUiState((prev) => ({ ...prev, isInputFocused: true }))
-          }
-          onBlur={() =>
-            setUiState((prev) => ({ ...prev, isInputFocused: false }))
-          }
-        />
 
-        {requestState.error && (
-          <div className="w-full mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm text-center">
-            {requestState.error}
-          </div>
-        )}
+        <div className="shortener-tabs" aria-label="Vista">
+          <button
+            type="button"
+            className={mode === "shorten" ? "is-active" : ""}
+            onClick={() => setMode("shorten")}
+          >
+            <Link2 size={18} />
+            Acortar
+          </button>
+          <button
+            type="button"
+            className={mode === "admin" ? "is-active" : ""}
+            onClick={() => setMode("admin")}
+          >
+            <Settings2 size={18} />
+            Administrar
+          </button>
+        </div>
 
-        <Button
-          onClick={handleShorten}
-          disabled={isButtonDisabled}
-          onMouseEnter={cancelAndReset}
-          className="w-32 mt-3 z-100 select-none text-white bg-black opacity-75 hover:opacity-100 hover:scale-105 font-medium py-2 rounded-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
-        >
-          {requestState.isLoading ? (
-            <>
-              <svg
-                className="animate-spin h-5 w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
+        {!isAdmin ? (
+          <div className="shortener-panel">
+            <div className="shortener-form">
+              <Input
+                className="shortener-input"
+                type="text"
+                placeholder="Pega tu URL aqui"
+                value={urlState.original}
+                onInput={(e) =>
+                  setUrlState((prev) => ({
+                    ...prev,
+                    original: e.target.value,
+                  }))
+                }
+                onFocus={() =>
+                  setUiState((prev) => ({ ...prev, isInputFocused: true }))
+                }
+                onBlur={() =>
+                  setUiState((prev) => ({ ...prev, isInputFocused: false }))
+                }
+              />
+
+              <Button
+                onClick={handleShorten}
+                disabled={isButtonDisabled}
+                className="shortener-button"
               >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              <span>Loading...</span>
-            </>
-          ) : (
-            "Shorten!"
-          )}
-        </Button>
+                {requestState.isLoading ? (
+                  <>
+                    <LoaderCircle className="spin" size={18} />
+                    Acortando
+                  </>
+                ) : (
+                  "Acortar"
+                )}
+              </Button>
+            </div>
 
-        {urlState.short && (
-          <div className="mt-4 w-full flex flex-col items-center gap-2">
-            <p className="text-center text-xs md:text-sm">
-              <strong>Short Link:</strong>{" "}
-              <a
-                href={urlState.short}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 underline"
-              >
-                {urlState.shortAlt}
-              </a>
-            </p>
-            <Button
-              onClick={copyToClipboard}
-              onMouseEnter={cancelAndReset}
-              className="w-auto cursor-pointer px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2"
-            >
-              {copied ? (
-                <>
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                    />
-                  </svg>
-                  Copy Link
-                </>
-              )}
-            </Button>
-          </div>
-        )}
+            {requestState.error && (
+              <div className="shortener-error">{requestState.error}</div>
+            )}
 
-        {links.length > 0 && (
-          <div className="mt-6 w-full ">
-            <h2 className="text-lg text-center font-semibold mb-2">
-              Your Links
-            </h2>
-            <ul className="w-full max-h-40 overflow-y-auto">
-              {links.map((link, index) => (
-                <li
-                  key={index}
-                  className="flex  flex-col items-center md:flex-row gap-4 justify-between mb-2 p-2 border-b border-gray-200"
-                >
-                  <span
-                    className="text-sm w-full md:w-fit md:max-w-2xs text-center text-gray-600 truncate"
-                    title={link.originalUrl}
+            {showResult && (
+              <div className="shortener-result">
+                <div>
+                  <span>URL original</span>
+                  <p title={urlState.original}>{urlState.original}</p>
+                </div>
+
+                <div>
+                  <span>URL acortada</span>
+                  <a
+                    href={urlState.short}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    {link.originalUrl}
+                    {urlState.shortAlt}
+                    <ExternalLink size={16} />
+                  </a>
+                </div>
+
+                <div className="result-actions">
+                  <Button onClick={copyToClipboard} className="copy-button">
+                    {copied ? <Check size={18} /> : <Copy size={18} />}
+                    {copied ? "Copiado" : "Copiar"}
+                  </Button>
+                  <span>
+                    {urlState.createdAt
+                      ? formatDate(new Date(urlState.createdAt))
+                      : "Guardado localmente"}
                   </span>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="admin-panel">
+            <label className="admin-search">
+              <Search size={18} />
+              <input
+                type="search"
+                placeholder="Buscar..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </label>
 
-                  <div className="flex flex-row justify-between gap-2">
-                    <a
-                      href={link.shortUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 text-sm underline"
-                    >
-                      {link.linkalt}
-                    </a>
-
+            <div className="admin-list" aria-live="polite">
+              {filteredLinks.length > 0 ? (
+                filteredLinks.map((link, index) => (
+                  <article className="admin-link" key={`${link.shortUrl}-${index}`}>
+                    <div>
+                      <p title={link.originalUrl}>{link.originalUrl}</p>
+                      <a
+                        href={link.shortUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {link.linkalt || link.shortUrl}
+                      </a>
+                    </div>
                     <button
-                      className="delete"
+                      type="button"
+                      className="delete-link"
                       onClick={() => handleDelete(index)}
-                    />
-                  </div>
-                </li>
-              ))}
-            </ul>
+                      aria-label="Borrar enlace local"
+                      title="Borrar enlace local"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </article>
+                ))
+              ) : (
+                <div className="admin-empty">
+                  {links.length ? "No hay coincidencias." : "Aun no tienes enlaces guardados."}
+                </div>
+              )}
+            </div>
           </div>
         )}
-
-      </div>
+      </section>
     </div>
   );
 };
