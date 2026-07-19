@@ -10,6 +10,7 @@ const APP_URL = (
 export const API_ENDPOINTS = {
   createUrl: `${API_URL}/api/create`,
   getUrl: (slug) => `${API_URL}/api/${slug}`,
+  getMetadata: (url) => `${API_URL}/api/metadata?url=${encodeURIComponent(url)}`,
   getUsage: `${API_URL}/api/usage`,
 };
 

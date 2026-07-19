@@ -54,6 +54,13 @@ const ShortenUrl = ({ onLinkCreated }) => {
   const [copied, setCopied] = useState(false);
   const [mode, setMode] = useState("shorten");
   const [search, setSearch] = useState("");
+  const [previewState, setPreviewState] = useState({
+    isLoading: false,
+    data: null,
+  });
+  const [adminPreviews, setAdminPreviews] = useState({});
+  const [copiedAdminLink, setCopiedAdminLink] = useState("");
+  const isAdmin = mode === "admin";
 
   const cardRef = useRef(null);
   const shineRef = useRef(null);
@@ -84,9 +91,17 @@ const ShortenUrl = ({ onLinkCreated }) => {
     return links.filter((link) => {
       const original = link.originalUrl?.toLowerCase() || "";
       const short = (link.linkalt || link.shortUrl || "").toLowerCase();
-      return original.includes(query) || short.includes(query);
+      const preview = adminPreviews[link.originalUrl]?.data;
+      const title = preview?.title?.toLowerCase() || "";
+      const siteName = preview?.siteName?.toLowerCase() || "";
+      return (
+        original.includes(query) ||
+        short.includes(query) ||
+        title.includes(query) ||
+        siteName.includes(query)
+      );
     });
-  }, [links, search]);
+  }, [adminPreviews, links, search]);
 
   useEffect(() => {
     setLinks(getStoredLinks());
@@ -131,6 +146,60 @@ const ShortenUrl = ({ onLinkCreated }) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedLinks));
   };
 
+  const getMetadata = async (url) => {
+    const response = await fetch(API_ENDPOINTS.getMetadata(url));
+    const data = await response.json();
+    return data.found ? data : null;
+  };
+
+  const fetchPreview = async (url) => {
+    setPreviewState({ isLoading: true, data: null });
+
+    try {
+      const data = await getMetadata(url);
+      setPreviewState({ isLoading: false, data });
+    } catch (error) {
+      console.error("Error al obtener metadata:", error);
+      setPreviewState({ isLoading: false, data: null });
+    }
+  };
+
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    const linksToFetch = filteredLinks
+      .slice(0, 12)
+      .filter(
+        (link) =>
+          link.originalUrl &&
+          isValidUrl(link.originalUrl) &&
+          !adminPreviews[link.originalUrl]
+      );
+
+    if (!linksToFetch.length) return;
+
+    linksToFetch.forEach((link) => {
+      setAdminPreviews((prev) => ({
+        ...prev,
+        [link.originalUrl]: { isLoading: true, data: null },
+      }));
+
+      getMetadata(link.originalUrl)
+        .then((data) => {
+          setAdminPreviews((prev) => ({
+            ...prev,
+            [link.originalUrl]: { isLoading: false, data },
+          }));
+        })
+        .catch(() => {
+          setAdminPreviews((prev) => ({
+            ...prev,
+            [link.originalUrl]: { isLoading: false, data: null },
+          }));
+        });
+    });
+  }, [adminPreviews, filteredLinks, isAdmin]);
+
   const handleShorten = async () => {
     if (!urlState.original) {
       setRequestState({
@@ -142,6 +211,14 @@ const ShortenUrl = ({ onLinkCreated }) => {
 
     const urlToShorten = normalizeUrl(urlState.original);
     setRequestState({ isLoading: true, error: "" });
+    setCopied(false);
+    setUrlState({
+      original: urlToShorten,
+      short: "",
+      shortAlt: "",
+      createdAt: "",
+    });
+    fetchPreview(urlToShorten);
 
     try {
       const response = await fetch(API_ENDPOINTS.createUrl, {
@@ -214,6 +291,16 @@ const ShortenUrl = ({ onLinkCreated }) => {
     }
   };
 
+  const copyAdminLink = async (shortUrl) => {
+    try {
+      await navigator.clipboard.writeText(shortUrl);
+      setCopiedAdminLink(shortUrl);
+      setTimeout(() => setCopiedAdminLink(""), 2000);
+    } catch (err) {
+      console.error("Error al copiar:", err);
+    }
+  };
+
   const cancelAndReset = () => {
     setUiState((prev) => ({ ...prev, isHover: true }));
 
@@ -230,7 +317,6 @@ const ShortenUrl = ({ onLinkCreated }) => {
   const resume = () => setUiState((prev) => ({ ...prev, isHover: false }));
 
   const showResult = Boolean(urlState.short);
-  const isAdmin = mode === "admin";
   const cardState = isAdmin ? "admin" : showResult ? "result" : "idle";
 
   return (
@@ -307,33 +393,59 @@ const ShortenUrl = ({ onLinkCreated }) => {
 
             {showResult && (
               <div className="shortener-result">
-                <div>
+                <div className="original-preview-card">
                   <span>URL original</span>
-                  <p title={urlState.original}>{urlState.original}</p>
+                  {previewState.isLoading ? (
+                    <div className="preview-loading">
+                      <LoaderCircle className="spin" size={18} />
+                      Cargando vista previa
+                    </div>
+                  ) : previewState.data ? (
+                    <div className="link-preview">
+                      {previewState.data.image && (
+                        <img
+                          src={previewState.data.image}
+                          alt=""
+                          loading="lazy"
+                          referrerPolicy="no-referrer"
+                        />
+                      )}
+                      <div>
+                        <strong>{previewState.data.title}</strong>
+                        {previewState.data.description && (
+                          <p>{previewState.data.description}</p>
+                        )}
+                        <small>{previewState.data.siteName || urlState.original}</small>
+                      </div>
+                    </div>
+                  ) : (
+                    <p title={urlState.original}>{urlState.original}</p>
+                  )}
                 </div>
 
-                <div>
-                  <span>URL acortada</span>
-                  <a
-                    href={urlState.short}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {urlState.shortAlt}
-                    <ExternalLink size={16} />
-                  </a>
-                </div>
-
-                <div className="result-actions">
-                  <Button onClick={copyToClipboard} className="copy-button">
-                    {copied ? <Check size={18} /> : <Copy size={18} />}
-                    {copied ? "Copiado" : "Copiar"}
-                  </Button>
-                  <span>
-                    {urlState.createdAt
-                      ? formatDate(new Date(urlState.createdAt))
-                      : "Guardado localmente"}
-                  </span>
+                <div className="short-link-card">
+                  <div className="short-link-header">
+                    <span>URL acortada</span>
+                    <time>
+                      {urlState.createdAt
+                        ? formatDate(new Date(urlState.createdAt))
+                        : "Guardado localmente"}
+                    </time>
+                  </div>
+                  <div className="short-link-row">
+                    <a
+                      href={urlState.short}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {urlState.shortAlt}
+                      <ExternalLink size={16} />
+                    </a>
+                    <Button onClick={copyToClipboard} className="copy-button">
+                      {copied ? <Check size={18} /> : <Copy size={18} />}
+                      {copied ? "Copiado" : "Copiar"}
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
@@ -352,29 +464,76 @@ const ShortenUrl = ({ onLinkCreated }) => {
 
             <div className="admin-list" aria-live="polite">
               {filteredLinks.length > 0 ? (
-                filteredLinks.map((link, index) => (
-                  <article className="admin-link" key={`${link.shortUrl}-${index}`}>
-                    <div>
-                      <p title={link.originalUrl}>{link.originalUrl}</p>
-                      <a
-                        href={link.shortUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {link.linkalt || link.shortUrl}
-                      </a>
-                    </div>
-                    <button
-                      type="button"
-                      className="delete-link"
-                      onClick={() => handleDelete(index)}
-                      aria-label="Borrar enlace local"
-                      title="Borrar enlace local"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </article>
-                ))
+                filteredLinks.map((link, index) => {
+                  const preview = adminPreviews[link.originalUrl];
+
+                  return (
+                    <article className="admin-link" key={`${link.shortUrl}-${index}`}>
+                      <div className="admin-link-content">
+                        {preview?.data?.image && (
+                          <img
+                            src={preview.data.image}
+                            alt=""
+                            loading="lazy"
+                            referrerPolicy="no-referrer"
+                          />
+                        )}
+                        <div>
+                          {preview?.isLoading ? (
+                            <p className="admin-preview-loading">
+                              Cargando vista previa
+                            </p>
+                          ) : preview?.data ? (
+                            <>
+                              <p title={preview.data.title}>
+                                {preview.data.title}
+                              </p>
+                              {preview.data.siteName && (
+                                <small>{preview.data.siteName}</small>
+                              )}
+                            </>
+                          ) : (
+                            <p title={link.originalUrl}>{link.originalUrl}</p>
+                          )}
+                          <div className="admin-short-row">
+                            <a
+                              href={link.shortUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {link.linkalt || link.shortUrl}
+                            </a>
+                            <ExternalLink size={14} />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="admin-link-actions">
+                        <button
+                          type="button"
+                          className="admin-icon-button admin-copy-link"
+                          onClick={() => copyAdminLink(link.shortUrl)}
+                          aria-label="Copiar enlace acortado"
+                          title="Copiar enlace acortado"
+                        >
+                          {copiedAdminLink === link.shortUrl ? (
+                            <Check size={18} />
+                          ) : (
+                            <Copy size={18} />
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          className="admin-icon-button delete-link"
+                          onClick={() => handleDelete(index)}
+                          aria-label="Borrar enlace local"
+                          title="Borrar enlace local"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })
               ) : (
                 <div className="admin-empty">
                   {links.length ? "No hay coincidencias." : "Aun no tienes enlaces guardados."}

@@ -73,7 +73,9 @@ function App() {
 
         <Routes>
           <Route path="/" element={<LinkShortenerSection />} />
-          <Route path="/:slug" element={<RedirectPage />} />
+          {import.meta.env.DEV && (
+            <Route path="/:slug" element={<RedirectPage />} />
+          )}
           <Route path="/404" element={<PageNotFound />} />
           <Route path="/429" element={<TooManyRequests />} />
         </Routes>
