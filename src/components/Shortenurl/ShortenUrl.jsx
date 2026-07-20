@@ -282,6 +282,12 @@ const ShortenUrl = ({ onLinkCreated }) => {
   };
 
   const cardState = isAdmin ? "admin" : showResult ? "result" : "idle";
+  const cardFilter =
+    cardState === "admin"
+      ? 'url("/liquid-glass-displace-admin.svg#displace")'
+      : cardState === "result"
+        ? 'url("/liquid-glass-displace-result.svg#displace")'
+        : 'url("/liquid-glass-displace-panel.svg#displace")';
 
   return (
     <div className="card-wrapper-3d">
@@ -292,7 +298,7 @@ const ShortenUrl = ({ onLinkCreated }) => {
         height="auto"
         radius="var(--radius-lg)"
         style={{
-          "--glass-element-filter": 'url("/liquid-glass-displace-panel.svg#displace")',
+          "--glass-element-filter": cardFilter,
         }}
       >
         <div

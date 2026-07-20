@@ -36,7 +36,7 @@
 }
 
 .shortener-card--admin {
-  height: clamp(420px, 58svh, 700px);
+  height: 540px;
 }
 
 .shortener-panel,
