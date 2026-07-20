@@ -660,6 +660,11 @@
     min-height: auto;
   }
 
+  .shortener-card--admin {
+    height: min(620px, calc(100svh - 148px));
+    min-height: 0;
+  }
+
   .shortener-form {
     grid-template-columns: 1fr;
     width: 100%;

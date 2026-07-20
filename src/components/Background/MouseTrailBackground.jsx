@@ -14,8 +14,10 @@ export default function MouseTrailBackground() {
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    const hasTouchPointer = window.matchMedia("(pointer: coarse)").matches;
+    const isSmallScreen = window.matchMedia("(max-width: 768px)").matches;
 
-    if (!context || prefersReducedMotion) {
+    if (!context || prefersReducedMotion || hasTouchPointer || isSmallScreen) {
       return undefined;
     }
 

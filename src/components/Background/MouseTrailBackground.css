@@ -8,3 +8,9 @@
   touch-action: none;
   opacity: 0.95;
 }
+
+@media (max-width: 768px), (pointer: coarse) {
+  .mouse-trail-background {
+    display: none;
+  }
+}
