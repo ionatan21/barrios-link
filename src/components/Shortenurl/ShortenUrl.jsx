@@ -73,8 +73,9 @@ const ShortenUrl = ({ onLinkCreated }) => {
     return url.match(/^https?:\/\//) ? url : `https://${url}`;
   };
 
+  const showResult = Boolean(urlState.short);
   const isButtonDisabled =
-    !isValidUrl(urlState.original) || requestState.isLoading;
+    (!showResult && !isValidUrl(urlState.original)) || requestState.isLoading;
 
   const filteredLinks = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -233,6 +234,27 @@ const ShortenUrl = ({ onLinkCreated }) => {
     }
   };
 
+  const handleResetShortener = () => {
+    setUrlState({
+      original: "",
+      short: "",
+      shortAlt: "",
+      createdAt: "",
+    });
+    setPreviewState({ isLoading: false, data: null });
+    setRequestState({ isLoading: false, error: "" });
+    setCopied(false);
+  };
+
+  const handlePrimaryAction = () => {
+    if (showResult) {
+      handleResetShortener();
+      return;
+    }
+
+    handleShorten();
+  };
+
   const handleDelete = (indexToRemove) => {
     const linkToRemove = filteredLinks[indexToRemove];
     const updatedLinks = links.filter((link) => link !== linkToRemove);
@@ -259,7 +281,6 @@ const ShortenUrl = ({ onLinkCreated }) => {
     }
   };
 
-  const showResult = Boolean(urlState.short);
   const cardState = isAdmin ? "admin" : showResult ? "result" : "idle";
 
   return (
@@ -309,24 +330,36 @@ const ShortenUrl = ({ onLinkCreated }) => {
                 type="text"
                 placeholder="Pega tu URL aqui"
                 value={urlState.original}
-                onInput={(e) =>
+                onInput={(e) => {
+                  const nextValue = e.target.value;
                   setUrlState((prev) => ({
                     ...prev,
-                    original: e.target.value,
-                  }))
-                }
+                    original: nextValue,
+                    short: nextValue === prev.original ? prev.short : "",
+                    shortAlt: nextValue === prev.original ? prev.shortAlt : "",
+                    createdAt: nextValue === prev.original ? prev.createdAt : "",
+                  }));
+
+                  if (showResult && nextValue !== urlState.original) {
+                    setPreviewState({ isLoading: false, data: null });
+                    setRequestState({ isLoading: false, error: "" });
+                    setCopied(false);
+                  }
+                }}
               />
 
               <Button
-                onClick={handleShorten}
+                onClick={handlePrimaryAction}
                 disabled={isButtonDisabled}
-                className="shortener-button"
+                className="shortener-button cursor-pointer"
               >
                 {requestState.isLoading ? (
                   <>
                     <LoaderCircle className="spin" size={18} />
                     Acortando
                   </>
+                ) : showResult ? (
+                  "Limpiar"
                 ) : (
                   "Acortar"
                 )}

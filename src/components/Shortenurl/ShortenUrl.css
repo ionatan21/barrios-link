@@ -130,9 +130,9 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(160px, 0.46fr);
   gap: var(--space-4);
-  width: calc(100% + var(--space-5));
-  max-width: calc(100% + var(--space-5));
-  margin-inline: calc(var(--space-5) / -2);
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
 }
 
 .shortener-input,
@@ -345,7 +345,9 @@
 
 .admin-panel {
   display: flex;
+  width: 100%;
   min-height: 0;
+  min-width: 0;
   flex: 1 1 auto;
   flex-direction: column;
   gap: var(--space-3);
@@ -354,14 +356,19 @@
 
 .admin-search {
   display: flex;
+  box-sizing: border-box;
+  width: 100%;
+  flex: 0 0 76px;
   align-items: center;
   gap: var(--space-2);
-  height: 52px;
+  height: 76px;
+  min-height: 76px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.04);
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-4);
   color: white;
+  outline: 0;
   transition:
     border-color var(--duration-fast) var(--ease-standard),
     box-shadow var(--duration-fast) var(--ease-standard);
@@ -369,16 +376,23 @@
 
 .admin-search input {
   height: 100%;
+  min-width: 0;
   flex: 1;
   border: 0;
+  appearance: none;
   background: transparent;
   padding: 0;
+  font-size: 20px;
+  line-height: 1;
   outline: 0;
 }
 
 .admin-list {
   display: flex;
+  box-sizing: border-box;
+  width: 100%;
   min-height: 0;
+  min-width: 0;
   flex: 1 1 auto;
   flex-direction: column;
   gap: var(--space-2);
@@ -389,6 +403,9 @@
 
 .admin-link {
   display: grid;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--space-3);
   align-items: center;
@@ -521,6 +538,8 @@
 
 .admin-empty {
   display: grid;
+  box-sizing: border-box;
+  width: 100%;
   min-height: 160px;
   place-items: center;
   border: 1px dashed var(--border);
