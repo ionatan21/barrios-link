@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import GlassElement from "@/components/GlassElement";
 import { API_ENDPOINTS, APP_URL } from "@/config/api";
 import "./ShortenUrl.css";
 
@@ -322,19 +323,32 @@ const ShortenUrl = ({ onLinkCreated }) => {
   return (
     <div className="card-wrapper-3d">
       <div className="card-shadow-3d" ref={shadowRef} />
-      <section
+      <GlassElement
+        as="section"
         ref={cardRef}
         className={`shortener-card shortener-card--${cardState}`}
+        width="min(560px, calc(100vw - 32px))"
+        height="auto"
+        radius="var(--radius-lg)"
+        style={{
+          "--glass-element-filter": 'url("/liquid-glass-displace-panel.svg#displace")',
+        }}
         onMouseEnter={cancelAndReset}
         onMouseLeave={resume}
       >
         <div className="card-shine-3d" ref={shineRef} />
 
-        <div className="shortener-tabs" aria-label="Vista">
+        <div
+          className={`shortener-tabs shortener-tabs--${mode}`}
+          aria-label="Vista"
+          role="tablist"
+        >
           <button
             type="button"
             className={mode === "shorten" ? "is-active" : ""}
             onClick={() => setMode("shorten")}
+            role="tab"
+            aria-selected={mode === "shorten"}
           >
             <Link2 size={18} />
             Acortar
@@ -343,6 +357,8 @@ const ShortenUrl = ({ onLinkCreated }) => {
             type="button"
             className={mode === "admin" ? "is-active" : ""}
             onClick={() => setMode("admin")}
+            role="tab"
+            aria-selected={mode === "admin"}
           >
             <Settings2 size={18} />
             Administrar
@@ -353,7 +369,7 @@ const ShortenUrl = ({ onLinkCreated }) => {
           <div className="shortener-panel">
             <div className="shortener-form">
               <Input
-                className="shortener-input"
+                className="shortener-input text-white"
                 type="text"
                 placeholder="Pega tu URL aqui"
                 value={urlState.original}
@@ -394,7 +410,7 @@ const ShortenUrl = ({ onLinkCreated }) => {
             {showResult && (
               <div className="shortener-result">
                 <div className="original-preview-card">
-                  <span>URL original</span>
+                  <span className="">URL original</span>
                   {previewState.isLoading ? (
                     <div className="preview-loading">
                       <LoaderCircle className="spin" size={18} />
@@ -453,7 +469,7 @@ const ShortenUrl = ({ onLinkCreated }) => {
         ) : (
           <div className="admin-panel">
             <label className="admin-search">
-              <Search size={18} />
+              <Search size={18} color="#ffffff" />
               <input
                 type="search"
                 placeholder="Buscar..."
@@ -516,7 +532,7 @@ const ShortenUrl = ({ onLinkCreated }) => {
                           title="Copiar enlace acortado"
                         >
                           {copiedAdminLink === link.shortUrl ? (
-                            <Check size={18} />
+                            <Check size={18} color="#ffffff" />
                           ) : (
                             <Copy size={18} />
                           )}
@@ -542,7 +558,7 @@ const ShortenUrl = ({ onLinkCreated }) => {
             </div>
           </div>
         )}
-      </section>
+      </GlassElement>
     </div>
   );
 };

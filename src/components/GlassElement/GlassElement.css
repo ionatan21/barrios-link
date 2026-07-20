@@ -1,0 +1,22 @@
+.glass-element {
+  position: relative;
+  display: grid;
+  width: var(--glass-element-width);
+  height: var(--glass-element-height);
+  place-items: center;
+  overflow: hidden;
+  border-radius: var(--glass-element-radius);
+  background: rgba(255, 255, 255, 0.001);
+  backdrop-filter:
+    blur(0.5px)
+    var(--glass-element-filter, url("/liquid-glass-displace.svg#displace"))
+    blur(1px)
+    brightness(1.1)
+    saturate(1.5);
+  -webkit-backdrop-filter:
+    blur(0.5px)
+    var(--glass-element-filter, url("/liquid-glass-displace.svg#displace"))
+    blur(1px)
+    brightness(1.1)
+    saturate(1.5);
+}
