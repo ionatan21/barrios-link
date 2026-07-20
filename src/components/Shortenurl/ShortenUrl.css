@@ -4,7 +4,6 @@
   display: flex;
   width: 100%;
   justify-content: center;
-  perspective: 1500px;
   animation: fadeInDown 0.6s ease-out;
 }
 
@@ -26,12 +25,10 @@
   box-shadow: var(--shadow-card);
   padding: var(--space-4);
   color: white;
-  transform-style: preserve-3d;
   transition:
     height var(--duration-expand) var(--ease-standard),
-    transform 80ms ease-out,
     border-color var(--duration-normal) var(--ease-standard);
-  will-change: height, transform;
+  will-change: height;
 }
 
 .shortener-card--result {
@@ -40,34 +37,6 @@
 
 .shortener-card--admin {
   height: clamp(420px, 58svh, 700px);
-}
-
-.card-shadow-3d {
-  position: absolute;
-  inset: 16px auto auto;
-  z-index: 0;
-  width: min(520px, calc(100vw - 56px));
-  height: 88%;
-  border-radius: var(--radius-lg);
-  filter: blur(28px);
-  pointer-events: none;
-  transition: transform 80ms ease-out;
-  will-change: transform;
-}
-
-.card-shine-3d {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  border-radius: inherit;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(255, 255, 255, 0) 58%
-  );
-  pointer-events: none;
-  transition: background 80ms ease-out;
-  mix-blend-mode: overlay;
 }
 
 .shortener-panel,

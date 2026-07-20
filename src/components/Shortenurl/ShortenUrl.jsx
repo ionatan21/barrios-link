@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Check,
   Copy,
@@ -46,11 +46,6 @@ const ShortenUrl = ({ onLinkCreated }) => {
     error: "",
   });
 
-  const [uiState, setUiState] = useState({
-    isHover: false,
-    isInputFocused: false,
-  });
-
   const [links, setLinks] = useState([]);
   const [copied, setCopied] = useState(false);
   const [mode, setMode] = useState("shorten");
@@ -62,10 +57,6 @@ const ShortenUrl = ({ onLinkCreated }) => {
   const [adminPreviews, setAdminPreviews] = useState({});
   const [copiedAdminLink, setCopiedAdminLink] = useState("");
   const isAdmin = mode === "admin";
-
-  const cardRef = useRef(null);
-  const shineRef = useRef(null);
-  const shadowRef = useRef(null);
 
   const isValidUrl = (url) => {
     if (!url) return false;
@@ -107,40 +98,6 @@ const ShortenUrl = ({ onLinkCreated }) => {
   useEffect(() => {
     setLinks(getStoredLinks());
   }, []);
-
-  useEffect(() => {
-    if (uiState.isHover || uiState.isInputFocused) return;
-
-    const onMouseMove = (e) => {
-      const wWidth = window.innerWidth;
-      const wHeight = window.innerHeight;
-      const x = e.pageX;
-      const y = e.pageY;
-      const mouseFromCenterX = x - wWidth / 2;
-      const mouseFromCenterY = y - wHeight / 2;
-      const around1 = -1 * (((y * 100) / wHeight) * 0.08 - 4);
-      const around2 = 1 * (((x * 100) / wWidth) * 0.08 - 4);
-      const trans1 = (mouseFromCenterX / wWidth) * 10;
-      const trans2 = (mouseFromCenterY / wHeight) * 10;
-      const theta = Math.atan2(y - wHeight / 2, x - wWidth / 2);
-      const angle = (theta * 180) / Math.PI - 90;
-
-      if (shineRef.current) {
-        shineRef.current.style.background = `linear-gradient(${angle}deg, rgba(255,255,255,${(y / wHeight) * 0.22}) 0%, rgba(255,255,255,0) 72%)`;
-      }
-
-      if (cardRef.current) {
-        cardRef.current.style.transform = `translate3d(${trans1}px, ${trans2}px, 0) rotateX(${around1}deg) rotateY(${around2}deg)`;
-      }
-
-      if (shadowRef.current) {
-        shadowRef.current.style.transform = `translateX(${mouseFromCenterX * -0.01}px) translateY(${mouseFromCenterY * -0.01}px)`;
-      }
-    };
-
-    window.addEventListener("mousemove", onMouseMove);
-    return () => window.removeEventListener("mousemove", onMouseMove);
-  }, [uiState.isHover, uiState.isInputFocused]);
 
   const persistLinks = (updatedLinks) => {
     setLinks(updatedLinks);
@@ -302,30 +259,13 @@ const ShortenUrl = ({ onLinkCreated }) => {
     }
   };
 
-  const cancelAndReset = () => {
-    setUiState((prev) => ({ ...prev, isHover: true }));
-
-    if (shineRef.current) {
-      shineRef.current.style.background =
-        "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 58%)";
-    }
-    if (cardRef.current) {
-      cardRef.current.style.transform = "none";
-    }
-    if (shadowRef.current) shadowRef.current.style.transform = "none";
-  };
-
-  const resume = () => setUiState((prev) => ({ ...prev, isHover: false }));
-
   const showResult = Boolean(urlState.short);
   const cardState = isAdmin ? "admin" : showResult ? "result" : "idle";
 
   return (
     <div className="card-wrapper-3d">
-      <div className="card-shadow-3d" ref={shadowRef} />
       <GlassElement
         as="section"
-        ref={cardRef}
         className={`shortener-card shortener-card--${cardState}`}
         width="min(560px, calc(100vw - 32px))"
         height="auto"
@@ -333,11 +273,7 @@ const ShortenUrl = ({ onLinkCreated }) => {
         style={{
           "--glass-element-filter": 'url("/liquid-glass-displace-panel.svg#displace")',
         }}
-        onMouseEnter={cancelAndReset}
-        onMouseLeave={resume}
       >
-        <div className="card-shine-3d" ref={shineRef} />
-
         <div
           className={`shortener-tabs shortener-tabs--${mode}`}
           aria-label="Vista"
@@ -378,12 +314,6 @@ const ShortenUrl = ({ onLinkCreated }) => {
                     ...prev,
                     original: e.target.value,
                   }))
-                }
-                onFocus={() =>
-                  setUiState((prev) => ({ ...prev, isInputFocused: true }))
-                }
-                onBlur={() =>
-                  setUiState((prev) => ({ ...prev, isInputFocused: false }))
                 }
               />
 
