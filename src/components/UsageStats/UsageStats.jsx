@@ -1,8 +1,8 @@
 import GlassElement from "@/components/GlassElement";
 
-const UsageStats = ({ links, redirects }) => {
+const UsageStats = ({ links, redirects, isVisible = true }) => {
   return (
-    <div className="usage-stats">
+    <div className={`usage-stats ${isVisible ? "is-visible" : ""}`}>
       <GlassElement
         className="usage-stat-glass"
         width="100%"

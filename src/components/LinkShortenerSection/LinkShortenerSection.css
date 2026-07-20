@@ -1,0 +1,33 @@
+.link-shortener-section {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+
+.usage-stats-slot {
+  display: grid;
+  width: 100%;
+  grid-template-rows: 0fr;
+  justify-items: center;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition:
+    grid-template-rows var(--duration-expand) var(--ease-standard),
+    opacity var(--duration-normal) var(--ease-standard),
+    transform var(--duration-expand) var(--ease-standard);
+  pointer-events: none;
+}
+
+.usage-stats-slot--visible {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.usage-stats-slot > .usage-stats {
+  min-height: 0;
+}

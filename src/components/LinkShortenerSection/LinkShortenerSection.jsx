@@ -2,14 +2,12 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { API_ENDPOINTS } from "../../config/api";
 import ShortenUrl from "@/components/Shortenurl/ShortenUrl";
 import UsageStats from "@/components/UsageStats/UsageStats";
+import "./LinkShortenerSection.css";
 
 const MIN_FETCH_INTERVAL = 30_000; // 30 segundos entre peticiones automáticas
 
 const LinkShortenerSection = () => {
-  const [usage, setUsage] = useState({
-    links: 0,
-    redirects: 0,
-  });
+  const [usage, setUsage] = useState(null);
 
   const lastFetchedAt = useRef(0);
 
@@ -25,7 +23,7 @@ const LinkShortenerSection = () => {
         lastFetchedAt.current = Date.now();
       }
     } catch (error) {
-      setUsage({ links: "402", redirects: "1207" });
+      setUsage({ links: "423", redirects: "1570" });
       console.error("Error al obtener estadísticas:", error);
     }
   }, []);
@@ -34,13 +32,24 @@ const LinkShortenerSection = () => {
     fetchUsage({ force: true });
   }, [fetchUsage]);
 
+  const hasStats = usage && Number(usage.links) > 0;
+
   return (
-    <>
+    <section className="link-shortener-section">
       <ShortenUrl onLinkCreated={() => fetchUsage({ force: true })} />
-      {usage.links != "0" && (
-        <UsageStats links={usage.links} redirects={usage.redirects} />
-      )}
-    </>
+      <div
+        className={`usage-stats-slot ${
+          hasStats ? "usage-stats-slot--visible" : ""
+        }`}
+        aria-hidden={!hasStats}
+      >
+        <UsageStats
+          links={usage?.links ?? 0}
+          redirects={usage?.redirects ?? 0}
+          isVisible={hasStats}
+        />
+      </div>
+    </section>
   );
 };
 

@@ -16,6 +16,9 @@
   position: relative;
   z-index: 10;
   display: flex;
+  box-sizing: border-box;
+  width: min(560px, calc(100vw - 32px));
+  height: 280px;
   min-height: 280px;
   flex-direction: column;
   overflow: hidden;
@@ -25,20 +28,18 @@
   color: white;
   transform-style: preserve-3d;
   transition:
-    min-height var(--duration-expand) var(--ease-standard),
-    max-height var(--duration-expand) var(--ease-standard),
+    height var(--duration-expand) var(--ease-standard),
     transform 80ms ease-out,
     border-color var(--duration-normal) var(--ease-standard);
-  will-change: transform;
+  will-change: height, transform;
 }
 
 .shortener-card--result {
-  min-height: 470px;
+  height: 470px;
 }
 
 .shortener-card--admin {
-  min-height: 360px;
-  max-height: min(700px, calc(100svh - 192px));
+  height: clamp(420px, 58svh, 700px);
 }
 
 .card-shadow-3d {
@@ -69,7 +70,6 @@
   mix-blend-mode: overlay;
 }
 
-.shortener-tabs,
 .shortener-panel,
 .admin-panel {
   position: relative;
@@ -80,9 +80,13 @@
   --tab-padding: var(--space-1);
   --tab-gap: var(--space-2);
 
+  position: relative;
+  z-index: 4;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--tab-gap);
+  flex: 0 0 auto;
+  min-height: 48px;
   margin-bottom: var(--space-4);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.04);
@@ -165,7 +169,7 @@
 .shortener-input,
 .admin-search input {
   height: 52px;
-  border: 1px solid rgb(162, 162, 162);
+  border: 1px solid white;
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.04);
   color: white;
@@ -185,7 +189,7 @@
 
 .shortener-input:focus-visible,
 .admin-search:focus-within {
-  border-color: var(--primary);
+  border-color: #ff8c00;
   box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
 }
 
@@ -373,7 +377,7 @@
 .admin-panel {
   display: flex;
   min-height: 0;
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   flex-direction: column;
   gap: var(--space-3);
   animation: riseIn var(--duration-normal) var(--ease-standard) both;
@@ -405,10 +409,10 @@
 
 .admin-list {
   display: flex;
-  flex: 0 1 auto;
+  min-height: 0;
+  flex: 1 1 auto;
   flex-direction: column;
   gap: var(--space-2);
-  max-height: 432px;
   overflow-y: auto;
   scrollbar-width: none;
   padding-right: var(--space-1);
@@ -564,6 +568,16 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-3);
   margin-top: var(--space-6);
+  transform: translateY(-8px) scale(0.98);
+  opacity: 0;
+  transition:
+    opacity var(--duration-normal) var(--ease-standard),
+    transform var(--duration-expand) var(--ease-standard);
+}
+
+.usage-stats.is-visible {
+  transform: translateY(0) scale(1);
+  opacity: 1;
 }
 
 .usage-stat-card {
@@ -647,12 +661,14 @@
 
 @media (max-width: 640px) {
   .shortener-card {
+    height: auto;
     min-height: 240px;
     padding: var(--space-3);
   }
 
   .shortener-card--result,
   .shortener-card--admin {
+    height: auto;
     min-height: auto;
   }
 

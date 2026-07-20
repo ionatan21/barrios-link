@@ -78,7 +78,7 @@ export default function MouseTrailBackground() {
       pointer.hasMoved = true;
     };
 
-    const drawParticle = (particle, index) => {
+    const drawParticle = (particle) => {
       const progress = particle.age;
       const opacity = Math.max(0, 1 - progress);
       const radius = particle.radius * (0.72 + progress * 0.42);
@@ -123,7 +123,7 @@ export default function MouseTrailBackground() {
         if (particle.age >= 1) {
           particles.splice(index, 1);
         } else {
-          drawParticle(particle, index);
+          drawParticle(particle);
         }
       }
 

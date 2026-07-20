@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { createElement, forwardRef } from "react";
 import "./GlassElement.css";
 
 const GlassElement = forwardRef(function GlassElement(
@@ -22,20 +22,20 @@ const GlassElement = forwardRef(function GlassElement(
     typeof height === "number" ? `${height}px` : height || dimension;
   const borderRadius = typeof radius === "number" ? `${radius}px` : radius;
 
-  return (
-    <Component
-      ref={ref}
-      className={`glass-element ${className}`.trim()}
-      style={{
+  return createElement(
+    Component,
+    {
+      ref,
+      className: `glass-element ${className}`.trim(),
+      style: {
         "--glass-element-width": elementWidth,
         "--glass-element-height": elementHeight,
         "--glass-element-radius": borderRadius,
         ...style,
-      }}
-      {...props}
-    >
-      {children}
-    </Component>
+      },
+      ...props,
+    },
+    children,
   );
 });
 
