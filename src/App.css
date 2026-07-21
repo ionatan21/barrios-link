@@ -11,8 +11,13 @@ main {
 
 .app-shell {
   background:
-    radial-gradient(circle at 50% 42%, rgba(255, 140, 0, 0.2), transparent 34%),
-    #009dff;
+  
+    #111111;
+}
+
+.app-content {
+  position: relative;
+  z-index: 1;
 }
 
 html {

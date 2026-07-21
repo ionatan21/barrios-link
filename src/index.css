@@ -1,4 +1,5 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@plugin 'lightswind/plugin';
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -8,7 +9,7 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  background: #009dff;
+  background: #ffffff;
   scrollbar-width: none;
   scrollbar-color: transparent transparent;
   font-synthesis: none;
@@ -33,11 +34,11 @@
   --space-8: 64px;
   --bg: #09090b;
   --surface: #111113;
-  --surface-elevated: #17171a;
+  --surface-elevated: #f0f0f5;
   --text: #ffffff;
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
-  --border: rgba(255, 255, 255, 0.08);
+  --border: rgba(250, 250, 250, 0.2);
   --primary: #3b82f6;
   --primary-hover: #2563eb;
   --success: #22c55e;
@@ -48,13 +49,12 @@
   --duration-expand: 350ms;
   --duration-collapse: 250ms;
   --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
-  --shadow-card: 0 20px 60px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 20px 60px rgba(104, 104, 104, 0.21);
   --blur-surface: 16px;
 }
 
 html {
   min-height: 100%;
-  background: #009dff;
 }
 
 body {
@@ -69,18 +69,15 @@ body {
   max-width: 100vw;
   font-family: var(--font-family);
   color: var(--text);
-  background: #009dff;
 }
 
 #root {
   min-height: 100vh;
-  background: #009dff;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background: #009dff;
   }
   a:hover {
     color: #747bff;

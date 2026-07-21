@@ -31,6 +31,17 @@
   will-change: height;
 }
 
+.shortener-card::before {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 58%);
+    content: "";
+    pointer-events: none;
+    mix-blend-mode: overlay;
+}
+
 .shortener-card--result {
   height: 470px;
 }
@@ -96,7 +107,7 @@
   border: 0;
   border-radius: 10px;
   background: transparent;
-  color: white;
+  color: black;
   font: inherit;
   font-size: 14px;
   font-weight: 600;
@@ -114,7 +125,7 @@
 }
 
 .shortener-tabs button.is-active {
-  color: white;
+  color: black;
   opacity: 1;
 }
 
@@ -127,10 +138,10 @@
 }
 
 .shortener-form {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(160px, 0.46fr);
+  display: flex;
+  justify-content: space-between;
   gap: var(--space-4);
-  width: 100%;
+  width: 400px;
   max-width: 100%;
   margin-inline: 0;
 }
@@ -164,12 +175,14 @@
 
 .shortener-button,
 .copy-button {
-  min-width: 160px;
+  cursor: pointer;
+  min-width: 100px;
+  width: 120px;
   height: 52px;
   border: 0;
   border-radius: var(--radius-sm);
-  background: black;
-  color: white;
+  background: white;
+  color: black;
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0;
@@ -180,7 +193,7 @@
 
 .shortener-button:hover,
 .copy-button:hover {
-  background: black;
+  background: white;
   transform: scale(1.02);
 }
 
@@ -361,8 +374,8 @@
   flex: 0 0 76px;
   align-items: center;
   gap: var(--space-2);
-  height: 76px;
-  min-height: 76px;
+  height: 56px;
+  max-height: 56px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.04);
