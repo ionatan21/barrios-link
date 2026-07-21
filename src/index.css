@@ -11,7 +11,7 @@
   -ms-overflow-style: none;
 
   color-scheme: light dark;
-  background: #000000;
+  background: #111111;
   scrollbar-width: none;
   scrollbar-color: transparent transparent;
   font-synthesis: none;
@@ -73,17 +73,20 @@ body {
   width: 100%;
   height: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   max-width: 100vw;
   font-family: var(--font-family);
   color: var(--text);
-  background-color: #000000 !important;
+  background-color: #111111 !important;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 
 #root {
   min-height: 100vh;
+  min-height: 100dvh;
+  background-color: #111111;
 }
 
 @media (prefers-color-scheme: light) {
