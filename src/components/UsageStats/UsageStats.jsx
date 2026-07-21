@@ -40,25 +40,42 @@ const UsageStats = ({ links, redirects, isVisible = true }) => {
   return (
     <div className={`usage-stats ${isVisible ? "is-visible" : ""}`}>
       <GlassElement
-        className="usage-stat-glass"
+        className="usage-stat-glass usage-stat-glass--desktop"
         width="100%"
         height="104px"
         radius={20}
       >
         <div className="usage-stat-card">
           <AnimatedCounter value={links} />
-          <span style={{ color: "white" }}>Links creados</span>
+          <span>Links creados</span>
         </div>
       </GlassElement>
       <GlassElement
-        className="usage-stat-glass"
+        className="usage-stat-glass usage-stat-glass--desktop"
         width="100%"
         height="104px"
         radius={20}
       >
         <div className="usage-stat-card">
           <AnimatedCounter value={redirects} />
-          <span style={{ color: "white" }}>Redirecciones</span>
+          <span>Redirecciones</span>
+        </div>
+      </GlassElement>
+      <GlassElement
+        className="usage-stat-glass usage-stat-glass--mobile"
+        width="100%"
+        height="92px"
+        radius={18}
+      >
+        <div className="usage-stats-combined">
+          <div className="usage-stat-card">
+            <AnimatedCounter value={links} />
+            <span>Links creados</span>
+          </div>
+          <div className="usage-stat-card">
+            <AnimatedCounter value={redirects} />
+            <span>Redirecciones</span>
+          </div>
         </div>
       </GlassElement>
     </div>

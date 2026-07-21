@@ -586,12 +586,29 @@
   text-align: center;
 }
 
+.usage-stats-combined {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+}
+
+.usage-stats-combined .usage-stat-card + .usage-stat-card {
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+}
+
 .usage-stat-glass {
   --glass-element-filter: url("/liquid-glass-displace-card.svg#displace");
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     0 20px 60px rgba(0, 0, 0, 0.34);
+}
+
+.usage-stat-glass--mobile {
+  display: none;
 }
 
 .usage-stat-glass::before {
@@ -737,5 +754,13 @@
   .usage-stats {
     grid-template-columns: 1fr;
     margin-top: var(--space-5);
+  }
+
+  .usage-stat-glass--desktop {
+    display: none;
+  }
+
+  .usage-stat-glass--mobile {
+    display: grid;
   }
 }
