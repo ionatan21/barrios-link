@@ -679,14 +679,25 @@
   }
 
   .shortener-form {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: var(--space-3);
     width: 100%;
     max-width: 100%;
     margin-inline: 0;
+    height: 45px;
+  }
+
+  .shortener-input {
+    height: 45px;
+    font-size: 14px;
   }
 
   .shortener-button {
-    width: 100%;
+    max-width: 80px;
+    height: 45px;
+    font-size: 14px;
   }
 
   .short-link-row {

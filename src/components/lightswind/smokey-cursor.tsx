@@ -28,6 +28,7 @@ interface SmokeyCursorProps {
   className?: string;
   zIndex?: React.CSSProperties["zIndex"];
   disabled?: boolean;
+  enableClick?: boolean;
   intensity?: number;
   followMouse?: boolean;
   autoColors?: boolean;
@@ -80,6 +81,7 @@ export default function SmokeyCursor({
   className = "",
   zIndex = 99999,
   disabled = false,
+  enableClick = true,
   intensity = 1,
   followMouse = true,
   autoColors = true,
@@ -1529,6 +1531,8 @@ export default function SmokeyCursor({
 
     // -------------------- Event Listeners --------------------
     const handleMouseDown = (e: MouseEvent) => {
+      if (!enableClick) return;
+
       const pointer = pointers[0];
       const posX = scaleByPixelRatio(e.clientX);
       const posY = scaleByPixelRatio(e.clientY);
@@ -1636,6 +1640,7 @@ export default function SmokeyCursor({
     disabled,
     intensity,
     autoColors,
+    enableClick,
     mounted,
   ]);
 

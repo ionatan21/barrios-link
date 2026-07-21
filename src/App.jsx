@@ -6,10 +6,12 @@ import PageNotFound from "./components/404/PageNotFound";
 import TooManyRequests from "./components/429/TooManyRequests";
 import Footer from "./components/Footer/Footer";
 import LogoContainer from "./components/LogoContainer/LogoContainer";
-import MouseTrailBackground from "./components/Background/MouseTrailBackground";
 import SmokeyCursor from "@/components/lightswind/smokey-cursor";
-// <MouseTrailBackground />
+import { useIsMobile } from "./hooks/use-mobile";
+
 function App() {
+  const isMobile = useIsMobile();
+
   return (
     <Router>
       <main className="app-shell flex w-screen flex-col items-center justify-center">
@@ -23,7 +25,8 @@ function App() {
           autoColors={false}
           color="#3b82f6"
           zIndex={0}
-          disabled={false}
+          enableClick={false}
+          disabled={isMobile}
         />
         <div className="app-content flex w-full flex-col items-center justify-center">
           <LogoContainer />
