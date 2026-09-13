@@ -6,7 +6,7 @@ export default function Footer() {
           &copy; {new Date().getFullYear()}{" "}
           <a
             className="text-white hover:text-white"
-            href="https://portfolio-jonatan-barrios.vercel.app/"
+            href="https://jonatanbarrios.dev/"
           >
             Jonatan Barrios
           </a>
